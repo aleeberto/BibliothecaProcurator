@@ -1,39 +1,39 @@
 #include "series.h"
 using std::string;
 
-Series::Series(string title, bool inCorso, string scrittore): Biblioteca(title, )
+Series::Series(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso) 
+    : Media(titolo, anno, immagine), 
+    numEpisodi(numEpisodi), numStagioni(numStagioni), durataMediaEp(durataMediaEp), inCorso(inCorso){}
 
-
-
-
-
-
-
-
-Cartaceo::Cartaceo(string title, string genre, int year, double price, bool disponibile,
-                   int copies, int prest, string image, string author, string editor, bool read)
-    : Biblioteca(title, genre, year, price, disponibile, copies, prest, image), autore(author), editore(editor), letto(read){}
-
-string Cartaceo::getAutore() const{
-    return autore;
+int Series::getNumEpisodi() const{
+    return numEpisodi;
 }
 
-string Cartaceo::getEditore() const{
-    return editore;
+int Series::getNumStagioni() const{
+    return numStagioni;
 }
 
-void Cartaceo::setAutore(const string &newautore){
-    autore = newautore;
+int Series::getDurataMediaEp() const{
+    return durataMediaEp;
 }
 
-void Cartaceo::setEditore(const string &neweditore){
-    editore = neweditore;
+bool Series::getInCorso() const{
+    return inCorso;
 }
 
-bool Cartaceo::getLetto() const{
-    return letto;
+
+void Series::setNumEpisodi(const int &updNumEpisodi){
+    numEpisodi = updNumEpisodi;
 }
 
-void Cartaceo::segnaLetto(){
-    letto = !letto;
+void Series::setNumStagioni(const int &updNumStagioni){
+    numStagioni = updNumStagioni;
+}
+
+void Series::setNumEpisodi(const int &updDurataMediaEp){
+    durataMediaEp = updDurataMediaEp;
+}
+
+void Series::setInCorso(const bool &updInCorso){
+    inCorso = updInCorso;
 }
