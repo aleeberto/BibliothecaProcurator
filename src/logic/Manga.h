@@ -1,6 +1,6 @@
 #ifndef MANGA_HEADER
 #define MANGA_HEADER
-#include "libro.h"
+#include "Libro.h"
 using std::string;
 
 class Manga : public Libro{

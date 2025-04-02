@@ -1,6 +1,6 @@
 #ifndef FILM_HEADER
 #define FILM_HEADER
-#include "media.h"
+#include "Media.h"
 using std::string;
 
 class Film : public Media{

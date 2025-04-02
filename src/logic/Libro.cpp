@@ -1,4 +1,4 @@
-#include "libro.h"
+#include "Libro.h"
 using std::string;
 
 Libro::Libro(string titolo, int anno, string immagine, string scrittore) 

@@ -1,4 +1,4 @@
-#include "anime.h"
+#include "Anime.h"
 using std::string;
 
 Anime::Anime(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso, 

@@ -1,6 +1,6 @@
 #ifndef LIBRI_HEADER
 #define LIBRI_HEADER
-#include "media.h"
+#include "Media.h"
 using std::string;
 
 class Libro : public Media{

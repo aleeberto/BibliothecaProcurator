@@ -1,4 +1,4 @@
-#include "manga.h"
+#include "Manga.h"
 using std::string;
 
 Manga::Manga(string titolo, int anno, string immagine, string scrittore, string illustratore, int numLibri, bool concluso) :

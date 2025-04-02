@@ -1,4 +1,4 @@
-#include "media.h"
+#include "Media.h"
 using std::string;
 
 Media::Media(string titolo, int anno, string immagine): titolo(titolo), anno(anno), immagine(immagine){}

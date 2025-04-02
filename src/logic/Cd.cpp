@@ -1,4 +1,4 @@
-#include "cd.h"
+#include "Cd.h"
 using std::string;
 
 Cd::Cd(string titolo, int anno, string immagine, string artista, int numTracce, int durataMedTracce) 

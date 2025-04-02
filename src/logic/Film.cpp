@@ -1,4 +1,4 @@
-#include "film.h"
+#include "Film.h"
 using std::string;
 
 Film::Film(string titolo, int anno, string immagine, string regista, string attoreProtagonista, int durata) 

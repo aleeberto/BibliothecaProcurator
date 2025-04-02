@@ -1,4 +1,4 @@
-#include "serietv.h"
+#include "SerieTv.h"
 using std::string;
 
 SerieTv::SerieTv(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso, 

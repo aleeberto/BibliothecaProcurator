@@ -1,4 +1,4 @@
-#include "series.h"
+#include "Series.h"
 using std::string;
 
 Series::Series(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso) 
@@ -30,7 +30,7 @@ void Series::setNumStagioni(const int &updNumStagioni){
     numStagioni = updNumStagioni;
 }
 
-void Series::setNumEpisodi(const int &updDurataMediaEp){
+void Series::setDurataMediaEp(const int &updDurataMediaEp){
     durataMediaEp = updDurataMediaEp;
 }
 

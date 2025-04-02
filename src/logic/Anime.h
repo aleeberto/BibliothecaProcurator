@@ -1,6 +1,6 @@
 #ifndef ANIME_HEADER
 #define ANIME_HEADER
-#include "series.h"
+#include "Series.h"
 using std::string;
 
 class Anime : public Series{

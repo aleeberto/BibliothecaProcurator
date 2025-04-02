@@ -1,6 +1,6 @@
 #ifndef SERIES_HEADER
 #define SERIES_HEADER
-#include "media.h"
+#include "Media.h"
 using std::string;
 
 class Series : public Media{
