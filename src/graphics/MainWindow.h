@@ -1,29 +1,51 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMainWindow>
+#include <QVector>
+#include <QMap>
+#include <QPushButton>
+#include <QLineEdit>
 #include "TopMenuWidget.h"
 #include "CreateItemWidget.h"
+#include "../json/JsonManager.h"
+#include "../logic/Media.h"
 
-#include <QMainWindow>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QWidget>
-
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
-private:
-    TopMenuWidget* topMenu;           // Puntatore al TopMenuWidget
-    CreateItemWidget* createItemWidget;  // Puntatore al CreateItemWidget
-    QWidget *rightWidget;             // Parte destra della finestra
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
-    void showCreateItemWidget();      // Slot per mostrare il widget di creazione
+    void showCreateItemWidget();
+    void onMediaItemCreated(Media* newItem);
+    void handleUploadRequest();
+    void saveCurrentData();
+    void onSearchTextChanged(const QString& text);
 
-public:
-    MainWindow(QWidget *parent = nullptr);  // Costruttore
+private:
+    void loadMediaData(const QString &filePath);
+    void clearCurrentMedia();
+    void displayMediaByCategory(const QString &category);
+    void setupCategoryButtons();
+    void setupSearchBar();
+    void addMediaCardToLayout(Media* media);
+    QPixmap loadMediaImage(const std::string& imagePath);
+
+    TopMenuWidget* topMenu;
+    CreateItemWidget* createItemWidget;
+    QWidget *rightWidget;
+    QVBoxLayout *rightLayout;
+    QVBoxLayout *leftLayout;
+    JsonManager *jsonManager;
+    QVector<Media*> mediaCollection;
+    QMap<QString, QPushButton*> categoryButtons;
+    QString currentJsonPath = "biblioteca.json";
+    QString currentCategory = "Tutti";
+    QLineEdit *searchBar;
 };
 
-#endif
+#endif // MAINWINDOW_H

@@ -3,22 +3,16 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QMenu>
-#include <QAction>
 
 class TopMenuWidget : public QWidget {
     Q_OBJECT
-private:
-    
 public:
     TopMenuWidget(QWidget* parent = nullptr);
-
-    signals:
-    void uploadJson();
-    void saveJson();
-    void createMedia();
-
+    
+signals:
+    void uploadRequested();  // Modificato da uploadJson
+    void saveRequested();    // Modificato da saveJson
+    void createRequested();  // Modificato da createMedia
 };
 
 #endif
-

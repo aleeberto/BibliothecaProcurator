@@ -1,6 +1,8 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "qwidget": "cpp"
+        "qwidget": "cpp",
+        "qhboxlayout": "cpp",
+        "qpushbutton": "cpp"
     }
 }

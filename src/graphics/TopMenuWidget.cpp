@@ -1,11 +1,12 @@
 #include "TopMenuWidget.h"
 #include <QHBoxLayout>
-#include <QDir>
 
 TopMenuWidget::TopMenuWidget(QWidget* parent) : QWidget(parent) {
     QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->setContentsMargins(5, 5, 5, 5);
+    layout->setSpacing(10);
 
-    QPushButton* btnUpload = new QPushButton( this);
+    QPushButton* btnUpload = new QPushButton(this);
     QPushButton* btnSave = new QPushButton(this);
     QPushButton* btnCreate = new QPushButton(this);
 
@@ -14,43 +15,43 @@ TopMenuWidget::TopMenuWidget(QWidget* parent) : QWidget(parent) {
     btnSave->setIcon(QIcon("./src/icon/save.png"));
     btnCreate->setIcon(QIcon("./src/icon/add.png"));
 
-    // Imposta dimensioni dei pulsatni
-    QSize buttonSize(50, 50);  // Modifica questa dimensione se necessario
+    // Imposta dimensioni e stili
+    QSize buttonSize(40, 40);
     btnUpload->setFixedSize(buttonSize);
     btnSave->setFixedSize(buttonSize);
     btnCreate->setFixedSize(buttonSize);
 
-    //Grandezza delle icone
-    QSize iconSize(40, 40);
+    QSize iconSize(25, 25);
     btnUpload->setIconSize(iconSize);
     btnSave->setIconSize(iconSize);
     btnCreate->setIconSize(iconSize);
 
     QString buttonStyle =
-        "QPushButton { "
-                       "background-color: #ffffff; "
-                       "border-radius: 10px; "
-                       "padding: 10px; "
-                       "border: 2px solid #000000; "
-                       "}"
-                       "QPushButton:hover { "
-                       "background-color: #a7a8a8; "
-                       "}"
-                       "QPushButton:pressed { "
-                       "background-color: #4b4f53; "
-                       "}";
+    "QPushButton {"
+    "background-color: #fff;"
+    "border-radius: 5px;"
+    "border: 1px solid #ddd;"
+    "}"
+    "QPushButton:hover {"
+    "background-color: #f0f0f0;"
+    "}"
+    "QPushButton:pressed {"
+    "background-color: #e0e0e0;"
+    "}";
 
     btnUpload->setStyleSheet(buttonStyle);
     btnSave->setStyleSheet(buttonStyle);
     btnCreate->setStyleSheet(buttonStyle);
 
-    connect(btnCreate, &QPushButton::clicked, this, &TopMenuWidget::createMedia);
+    // Connessioni dei pulsanti
+    connect(btnUpload, &QPushButton::clicked, this, &TopMenuWidget::uploadRequested);
+    connect(btnSave, &QPushButton::clicked, this, &TopMenuWidget::saveRequested);
+    connect(btnCreate, &QPushButton::clicked, this, &TopMenuWidget::createRequested);
 
-    // Aggiunge i pulsanti al layout
     layout->addWidget(btnUpload);
     layout->addWidget(btnSave);
     layout->addWidget(btnCreate);
+    layout->addStretch();
 
-    layout->addStretch(); //sposta tutto a sinistra
-    setLayout(layout);
+    this->setLayout(layout);
 }
