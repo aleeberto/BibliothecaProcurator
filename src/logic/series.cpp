@@ -1,9 +1,8 @@
-#include "Series.h"
+#include "series.h"
 using std::string;
 
-Series::Series(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso) 
-    : Media(titolo, anno, immagine), 
-    numEpisodi(numEpisodi), numStagioni(numStagioni), durataMediaEp(durataMediaEp), inCorso(inCorso){}
+Series::Series(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso) : 
+    Media(titolo, anno, immagine), numEpisodi(numEpisodi), numStagioni(numStagioni), durataMediaEp(durataMediaEp), inCorso(inCorso){}
 
 int Series::getNumEpisodi() const{
     return numEpisodi;
@@ -20,7 +19,6 @@ int Series::getDurataMediaEp() const{
 bool Series::getInCorso() const{
     return inCorso;
 }
-
 
 void Series::setNumEpisodi(const int &updNumEpisodi){
     numEpisodi = updNumEpisodi;

@@ -6,10 +6,10 @@
 #include <QMap>
 #include <QPushButton>
 #include <QLineEdit>
-#include "TopMenuWidget.h"
-#include "CreateItemWidget.h"
-#include "../json/JsonManager.h"
-#include "../logic/Media.h"
+#include "topMenuWidget.h"
+#include "createItemWidget.h"
+#include "../services/jsonService.h"
+#include "../logic/media.h"
 
 class MainWindow : public QMainWindow
 {
@@ -40,7 +40,7 @@ private:
     QWidget *rightWidget;
     QVBoxLayout *rightLayout;
     QVBoxLayout *leftLayout;
-    JsonManager *jsonManager;
+    JsonService *jsonService;
     QVector<Media*> mediaCollection;
     QMap<QString, QPushButton*> categoryButtons;
     QString currentJsonPath = "biblioteca.json";

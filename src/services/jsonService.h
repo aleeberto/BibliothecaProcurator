@@ -1,16 +1,16 @@
-#ifndef JSONMANAGER_H
-#define JSONMANAGER_H
+#ifndef JSONSERVICE_HEADER
+#define JSONSERVICE_HEADER
 
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>
-#include "../logic/Media.h"
+#include "../logic/media.h"
 
-class JsonManager : public QObject
+class JsonService : public QObject
 {
     Q_OBJECT
 public:
-    explicit JsonManager(QObject *parent = nullptr);
+    explicit JsonService(QObject *parent = nullptr);
     
     bool loadFromFile(const QString &filePath);
     bool saveToFile(const QString &filePath);
@@ -30,4 +30,4 @@ private:
     QJsonObject mediaToJson(Media *media) const;
 };
 
-#endif // JSONMANAGER_H
+#endif

@@ -1,6 +1,6 @@
 #ifndef ANIME_HEADER
 #define ANIME_HEADER
-#include "Series.h"
+#include "series.h"
 using std::string;
 
 class Anime : public Series{
@@ -9,8 +9,7 @@ class Anime : public Series{
         string studioAnimazione;
 
     public:
-        Anime(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso, 
-            string disegnatore, string studioAnimazione);
+        Anime(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso, string disegnatore, string studioAnimazione);
         virtual ~Anime() = default;
     
         string getDisegnatore() const;

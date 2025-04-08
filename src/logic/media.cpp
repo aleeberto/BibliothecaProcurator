@@ -1,4 +1,4 @@
-#include "Media.h"
+#include "media.h"
 using std::string;
 
 Media::Media(string titolo, int anno, string immagine): titolo(titolo), anno(anno), immagine(immagine){}
@@ -14,7 +14,6 @@ int Media::getAnno() const{
 string Media::getImmagine() const{
     return immagine;
 }
-
 
 void Media::setTitolo(const string &updTitolo){
     titolo = updTitolo;

@@ -1,6 +1,6 @@
 #ifndef SERIETV_HEADER
 #define SERIETV_HEADER
-#include "Series.h"
+#include "series.h"
 using std::string;
 
 class SerieTv : public Series{

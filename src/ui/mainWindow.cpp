@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+#include "mainWindow.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -86,8 +86,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightScrollArea, 1);
 
-    // Initialize JsonManager
-    jsonManager = new JsonManager(this);
+    // Initialize jsonService
+    jsonService = new JsonService(this);
 
     // Set minimum window size
     setMinimumSize(900, 600);
@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 MainWindow::~MainWindow()
 {
     qDeleteAll(mediaCollection);
-    delete jsonManager;
+    delete jsonService;
 }
 
 void MainWindow::setupCategoryButtons()
@@ -168,12 +168,12 @@ void MainWindow::setupSearchBar()
 
 void MainWindow::loadMediaData(const QString &filePath)
 {
-    if (jsonManager->loadFromFile(filePath)) {
+    if (jsonService->loadFromFile(filePath)) {
         clearCurrentMedia();
         qDeleteAll(mediaCollection);
         mediaCollection.clear();
 
-        QVector<Media*> loadedMedia = jsonManager->getAllMedia();
+        QVector<Media*> loadedMedia = jsonService->getAllMedia();
         for (Media* media : loadedMedia) {
             mediaCollection.append(media);
         }
@@ -190,7 +190,7 @@ void MainWindow::displayMediaByCategory(const QString &category)
     QString searchText = searchBar->text().toLower();
     
     for (Media* media : mediaCollection) {
-        QString mediaType = jsonManager->getMediaTypeName(media);
+        QString mediaType = jsonService->getMediaTypeName(media);
         QString mediaTitle = QString::fromStdString(media->getTitolo()).toLower();
 
         if ((category == "Tutti" || mediaType == category) &&
@@ -231,7 +231,7 @@ void MainWindow::addMediaCardToLayout(Media* media)
     titleLabel->setStyleSheet("font-size: 14px;");
 
     QLabel *yearLabel = new QLabel("Anno: " + QString::number(media->getAnno()));
-    QLabel *typeLabel = new QLabel("Tipo: " + jsonManager->getMediaTypeName(media));
+    QLabel *typeLabel = new QLabel("Tipo: " + jsonService->getMediaTypeName(media));
 
     detailsLayout->addWidget(titleLabel);
     detailsLayout->addWidget(yearLabel);
@@ -261,6 +261,8 @@ void MainWindow::addMediaCardToLayout(Media* media)
     }
     else if (auto libro = dynamic_cast<Libro*>(media)) {
         detailsLayout->addWidget(new QLabel("Scrittore: " + QString::fromStdString(libro->getScrittore())));
+        detailsLayout->addWidget(new QLabel("Anno di Stampa: " + QString::number(libro->getAnnoStampa())));
+        detailsLayout->addWidget(new QLabel("Casa Editrice: " + QString::fromStdString(libro->getCasaEditrice())));
     }
     else if (auto manga = dynamic_cast<Manga*>(media)) {
         detailsLayout->addWidget(new QLabel("Scrittore: " + QString::fromStdString(manga->getScrittore())));
@@ -347,12 +349,12 @@ void MainWindow::handleUploadRequest()
 
 void MainWindow::saveCurrentData()
 {
-    jsonManager->clearAll();
+    jsonService->clearAll();
     for (Media* media : mediaCollection) {
-        jsonManager->addMedia(media);
+        jsonService->addMedia(media);
     }
 
-    if (jsonManager->saveToFile(currentJsonPath)) {
+    if (jsonService->saveToFile(currentJsonPath)) {
         QMessageBox::information(this, "Successo", 
             "Dati salvati correttamente in:\n" + QDir::toNativeSeparators(currentJsonPath));
     } else {
@@ -375,7 +377,7 @@ void MainWindow::onMediaItemCreated(Media* newItem)
 {
     if (newItem) {
         mediaCollection.append(newItem);
-        jsonManager->addMedia(newItem);
+        jsonService->addMedia(newItem);
         displayMediaByCategory(currentCategory);
         createItemWidget->hide();
     }

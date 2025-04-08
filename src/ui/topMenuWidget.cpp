@@ -1,4 +1,4 @@
-#include "TopMenuWidget.h"
+#include "topMenuWidget.h"
 #include <QHBoxLayout>
 
 TopMenuWidget::TopMenuWidget(QWidget* parent) : QWidget(parent) {

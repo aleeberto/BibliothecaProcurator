@@ -1,6 +1,6 @@
 #ifndef CD_HEADER
 #define CD_HEADER
-#include "Media.h"
+#include "media.h"
 using std::string;
 
 class Cd : public Media{

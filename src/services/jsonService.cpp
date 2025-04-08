@@ -1,17 +1,17 @@
-#include "JsonManager.h"
+#include "jsonService.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QDebug>
-#include "../logic/Film.h"
-#include "../logic/SerieTv.h"
-#include "../logic/Anime.h"
-#include "../logic/Libro.h"
-#include "../logic/Manga.h"
-#include "../logic/Cd.h"
+#include "../logic/film.h"
+#include "../logic/serieTv.h"
+#include "../logic/anime.h"
+#include "../logic/libro.h"
+#include "../logic/manga.h"
+#include "../logic/cd.h"
 
-JsonManager::JsonManager(QObject *parent) : QObject(parent) {}
+JsonService::JsonService(QObject *parent) : QObject(parent) {}
 
-bool JsonManager::loadFromFile(const QString &filePath) {
+bool JsonService::loadFromFile(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Impossibile aprire il file:" << filePath;
@@ -31,7 +31,7 @@ bool JsonManager::loadFromFile(const QString &filePath) {
     return true;
 }
 
-bool JsonManager::saveToFile(const QString &filePath) {
+bool JsonService::saveToFile(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Impossibile salvare il file:" << filePath;
@@ -48,7 +48,7 @@ bool JsonManager::saveToFile(const QString &filePath) {
     return true;
 }
 
-QVector<Media*> JsonManager::getAllMedia() const {
+QVector<Media*> JsonService::getAllMedia() const {
     QVector<Media*> result;
     
     for (const QJsonValue &value : mediaArray) {
@@ -61,12 +61,12 @@ QVector<Media*> JsonManager::getAllMedia() const {
     return result;
 }
 
-void JsonManager::addMedia(Media *media) {
+void JsonService::addMedia(Media *media) {
     if (!media) return;
     mediaArray.append(mediaToJson(media));
 }
 
-bool JsonManager::removeMedia(const QString &title) {
+bool JsonService::removeMedia(const QString &title) {
     for (int i = 0; i < mediaArray.size(); ++i) {
         QJsonObject obj = mediaArray[i].toObject();
         if (obj["titolo"].toString().compare(title, Qt::CaseInsensitive) == 0) {
@@ -77,7 +77,7 @@ bool JsonManager::removeMedia(const QString &title) {
     return false;
 }
 
-Media* JsonManager::findMedia(const QString &title) const {
+Media* JsonService::findMedia(const QString &title) const {
     for (const QJsonValue &value : mediaArray) {
         QJsonObject obj = value.toObject();
         if (obj["titolo"].toString().compare(title, Qt::CaseInsensitive) == 0) {
@@ -87,11 +87,11 @@ Media* JsonManager::findMedia(const QString &title) const {
     return nullptr;
 }
 
-void JsonManager::clearAll() {
+void JsonService::clearAll() {
     mediaArray = QJsonArray();
 }
 
-QString JsonManager::getMediaTypeName(Media* media) const {
+QString JsonService::getMediaTypeName(Media* media) const {
     if (dynamic_cast<Film*>(media)) return "Film";
     if (dynamic_cast<SerieTv*>(media)) return "Serie Tv";
     if (dynamic_cast<Anime*>(media)) return "Anime";
@@ -101,7 +101,7 @@ QString JsonManager::getMediaTypeName(Media* media) const {
     return "Altro";
 }
 
-Media* JsonManager::jsonToMedia(const QJsonObject &jsonObj) const {
+Media* JsonService::jsonToMedia(const QJsonObject &jsonObj) const {
     std::string titolo = jsonObj["titolo"].toString().toStdString();
     int anno = jsonObj["anno"].toInt();
     std::string immagine = jsonObj["immagine"].toString().toStdString();
@@ -137,10 +137,12 @@ Media* JsonManager::jsonToMedia(const QJsonObject &jsonObj) const {
             jsonObj["studioAnimazione"].toString().toStdString()
         );
     }
-    else if (type == "Libri") {
+    else if (type == "Libro") {
         return new Libro(
             titolo, anno, immagine,
-            jsonObj["scrittore"].toString().toStdString()
+            jsonObj["scrittore"].toString().toStdString(),
+            jsonObj["annoStampa"].toInt(),
+            jsonObj["casaEditrice"].toString().toStdString()
         );
     }
     else if (type == "Manga") {
@@ -164,7 +166,7 @@ Media* JsonManager::jsonToMedia(const QJsonObject &jsonObj) const {
     return nullptr;
 }
 
-QJsonObject JsonManager::mediaToJson(Media *media) const {
+QJsonObject JsonService::mediaToJson(Media *media) const {
     QJsonObject jsonObj;
     
     if (dynamic_cast<Film*>(media)) jsonObj["type"] = "Film";
@@ -202,6 +204,8 @@ QJsonObject JsonManager::mediaToJson(Media *media) const {
     }
     else if (auto libro = dynamic_cast<Libro*>(media)) {
         jsonObj["scrittore"] = QString::fromStdString(libro->getScrittore());
+        jsonObj["annoStampa"] = libro->getAnnoStampa();
+        jsonObj["casaEditrice"] = QString::fromStdString(libro->getCasaEditrice());
     }
     else if (auto manga = dynamic_cast<Manga*>(media)) {
         jsonObj["scrittore"] = QString::fromStdString(manga->getScrittore());

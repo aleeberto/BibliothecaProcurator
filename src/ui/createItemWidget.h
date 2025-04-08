@@ -9,14 +9,15 @@
 #include <QStackedWidget>
 #include <QPushButton>
 #include <QMessageBox>
-#include "../logic/Media.h"
-#include "../logic/Series.h"
-#include "../logic/Anime.h"
-#include "../logic/SerieTv.h"
-#include "../logic/Film.h"
-#include "../logic/Libro.h"
-#include "../logic/Manga.h"
-#include "../logic/Cd.h"
+#include "../logic/media.h"
+#include "../logic/series.h"
+#include "../logic/anime.h"
+#include "../logic/serieTv.h"
+#include "../logic/film.h"
+#include "../logic/libro.h"
+#include "../logic/manga.h"
+#include "../logic/cd.h"
+#include "../logic/cartaceo.h"
 
 class CreateItemWidget : public QWidget
 {

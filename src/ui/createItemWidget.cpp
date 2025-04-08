@@ -1,4 +1,4 @@
-#include "CreateItemWidget.h"
+#include "createItemWidget.h"
 #include <QScrollArea>
 #include <QDebug>
 
@@ -33,7 +33,7 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         {"Serie Tv", {"Numero Episodi", "Numero Stagioni", "Durata Media Episodio (min)", "In Corso (true/false)", "Ideatore", "Casa produttrice"}},
         {"Anime", {"Numero Episodi", "Numero Stagioni", "Durata Media Episodio (min)", "In Corso (true/false)", "Disegnatore", "Studio Animazione"}},
         {"Film", {"Regista", "Attore protagonista", "Durata (min)"}},
-        {"Libri", {"Scrittore"}},
+        {"Libri", {"Scrittore", "Anno di stampa", "Casa Editrice"}},
         {"Manga", {"Scrittore", "Numero Libri", "Illustratore", "Concluso (true/false)"}},
         {"Cd", {"Artista", "Numero Tracce", "Durata Media Tracce (sec)"}}
     };
@@ -177,7 +177,9 @@ Media* CreateItemWidget::createMediaItem() const
                 fields[0]->text().toStdString(),
                 fields[2]->text().toInt(),
                 fields[1]->text().toStdString(),
-                fields[3]->text().toStdString()
+                fields[3]->text().toStdString(),
+                fields[4]->text().toInt(),
+                fields[5]->text().toStdString()
             );
         }
         else if (type == "Manga") {

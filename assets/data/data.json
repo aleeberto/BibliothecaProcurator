@@ -100,14 +100,18 @@
         "titolo": "Ghost in the Wires",
         "anno": 2011,
         "immagine": "../app/assets/img/ghost.jpg",
-        "scrittore": "Kevin Mitnick"
+        "scrittore": "Kevin Mitnick",
+        "annoStampa": 2011,
+        "casaEditrice": "Apple Inc"
       },
       {
         "type": "Libro",
         "titolo": "Il Silmarillion",
         "anno": 1977,
         "immagine": "../app/assets/img/silmarillion.jpg",
-        "scrittore": "J.R.R. Tolkien"
+        "scrittore": "J.R.R. Tolkien",
+        "annoStampa": 1997,
+        "casaEditrice": "Bompiani"
       }
     ]
   }
