@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "src/graphics/MainWindow.h"
+#include "src/ui/MainWindow.h"
 #include <QDebug>
 
 
