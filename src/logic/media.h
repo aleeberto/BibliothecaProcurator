@@ -1,6 +1,8 @@
 #ifndef MEDIA_HEADER
 #define MEDIA_HEADER
 #include <string>
+#include <QString>
+#include <QJsonObject>
 using std::string;
 
 class Media{
@@ -20,6 +22,12 @@ class Media{
         void setTitolo(const string &updTitolo);
         void setImmagine(const string &updImmagine);
         void setAnno(const int &updAnno);
+
+        virtual QString getDetails() const = 0;
+        virtual QString getTypeName() const = 0;
+        virtual QString getShortDescription() const = 0;
+        virtual bool matchesSearch(const QString& searchTerm) const;
+        virtual QJsonObject toJson() const = 0;
     };
 
 #endif
