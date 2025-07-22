@@ -277,8 +277,8 @@ QPixmap MainWindow::loadMediaImage(const std::string& imagePath)
     QFileInfo fileInfo(imageQPath);
     if (fileInfo.isRelative()) {
         QString appDir = QCoreApplication::applicationDirPath();
-        QString resourcesPath = QDir::cleanPath(appDir + QDir::separator() + "resources" + QDir::separator());
-        imageQPath = QDir::cleanPath(resourcesPath + imageQPath);
+        QString normalizedPath = QDir::cleanPath(appDir + QDir::separator() + imageQPath);
+        imageQPath = normalizedPath;
     }
 
     if (!pixmap.load(imageQPath)) {
