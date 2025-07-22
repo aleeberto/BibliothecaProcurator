@@ -7,20 +7,17 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    // Scroll content widget
     QWidget *scrollContent = new QWidget();
     QVBoxLayout *contentLayout = new QVBoxLayout(scrollContent);
     contentLayout->setContentsMargins(15, 15, 15, 15);
     contentLayout->setSpacing(15);
 
-    // Configure scroll area
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollContent);
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // Form content
     QLabel *label = new QLabel("Seleziona il tipo di oggetto:", scrollContent);
     itemTypeCombo = new QComboBox(scrollContent);
     itemTypeCombo->setFixedHeight(35);
@@ -28,7 +25,6 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     stackedFields = new QStackedWidget(scrollContent);
     stackedFields->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    // Define fields for each media type
     QMap<QString, QStringList> mediaFields = {
         {"Serie Tv", {"Numero Episodi", "Numero Stagioni", "Durata Media Episodio (min)", "In Corso (true/false)", "Ideatore", "Casa produttrice"}},
         {"Anime", {"Numero Episodi", "Numero Stagioni", "Durata Media Episodio (min)", "In Corso (true/false)", "Disegnatore", "Studio Animazione"}},
@@ -38,19 +34,16 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         {"Cd", {"Artista", "Numero Tracce", "Durata Media Tracce (sec)"}}
     };
 
-    // Create a form page for each media type
     for (const QString& type : mediaFields.keys()) {
         QWidget* page = new QWidget(scrollContent);
         QVBoxLayout* pageLayout = new QVBoxLayout(page);
         pageLayout->setContentsMargins(5, 5, 5, 5);
         pageLayout->setSpacing(8);
 
-        // Common fields for all media types
         addFieldWithPlaceholder(pageLayout, "Titolo:", "Inserisci il titolo");
         addFieldWithPlaceholder(pageLayout, "Immagine:", "Percorso dell'immagine");
         addFieldWithPlaceholder(pageLayout, "Anno:", "Anno di pubblicazione");
 
-        // Type-specific fields
         for (const QString& field : mediaFields[type]) {
             addFieldWithPlaceholder(pageLayout, field + ":", "Inserisci " + field);
         }
@@ -61,7 +54,6 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         itemTypeCombo->addItem(type);
     }
 
-    // Create button
     createButton = new QPushButton("Crea Media", scrollContent);
     createButton->setFixedHeight(40);
     createButton->setStyleSheet(
@@ -76,13 +68,11 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         "QPushButton:pressed { background-color: #3d8b40; }"
     );
 
-    // Connections
     connect(itemTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CreateItemWidget::onItemTypeChanged);
     connect(createButton, &QPushButton::clicked,
             this, &CreateItemWidget::onCreateButtonClicked);
 
-    // Add widgets to layout
     contentLayout->addWidget(label);
     contentLayout->addWidget(itemTypeCombo);
     contentLayout->addWidget(stackedFields);

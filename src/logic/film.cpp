@@ -1,57 +1,50 @@
-#include "serieTv.h"
+#include "film.h"
 #include <QJsonObject>
 
-SerieTv::SerieTv(string titolo, int anno, string immagine, int numEpisodi, int numStagioni, int durataMediaEp, bool inCorso, string ideatore, string casaProduttrice)
-    : Media(titolo, anno, immagine), numEpisodi(numEpisodi), numStagioni(numStagioni), durataMediaEp(durataMediaEp), inCorso(inCorso), ideatore(ideatore), casaProduttrice(casaProduttrice) {}
+Film::Film(string titolo, int anno, string immagine, string regista, string attoreProtagonista, int durata)
+    : Media(titolo, anno, immagine), regista(regista), attoreProtagonista(attoreProtagonista), durata(durata) {}
 
-int SerieTv::getNumEpisodi() const { return numEpisodi; }
-int SerieTv::getNumStagioni() const { return numStagioni; }
-int SerieTv::getDurataMediaEp() const { return durataMediaEp; }
-bool SerieTv::getInCorso() const { return inCorso; }
-string SerieTv::getIdeatore() const { return ideatore; }
-string SerieTv::getCasaProduttrice() const { return casaProduttrice; }
+string Film::getRegista() const { return regista; }
+string Film::getAttoreProtagonista() const { return attoreProtagonista; }
+int Film::getDurata() const { return durata; }
 
-void SerieTv::setNumEpisodi(const int &updNumEpisodi) { numEpisodi = updNumEpisodi; }
-void SerieTv::setNumStagioni(const int &updNumStagioni) { numStagioni = updNumStagioni; }
-void SerieTv::setDurataMediaEp(const int &updDurataMediaEp) { durataMediaEp = updDurataMediaEp; }
-void SerieTv::setInCorso(const bool &updInCorso) { inCorso = updInCorso; }
-void SerieTv::setIdeatore(const string &updIdeatore) { ideatore = updIdeatore; }
-void SerieTv::setCasaProduttrice(const string &updCasaProduttrice) { casaProduttrice = updCasaProduttrice; }
+void Film::setRegista(const string &updRegista) { regista = updRegista; }
+void Film::setAttoreProtagonista(const string &updAttoreProtagonista) { attoreProtagonista = updAttoreProtagonista; }
+void Film::setDurata(const int &updDurata) { durata = updDurata; }
 
-QString SerieTv::getDetails() const {
-    return QString("Serie TV: %1 (%2) - %3 episodes, %4 seasons, %5 min per episode")
+QString Film::getDetails() const {
+    return QString("Film: %1 (%2) - Regista: %3, Durata: %4 min")
            .arg(QString::fromStdString(getTitolo()))
            .arg(getAnno())
-           .arg(getNumEpisodi())
-           .arg(getNumStagioni())
-           .arg(getDurataMediaEp());
+           .arg(QString::fromStdString(getRegista()))
+           .arg(getDurata());
 }
 
-QString SerieTv::getTypeName() const {
-    return "Serie Tv";
+QString Film::getTypeName() const {
+    return "Film";
 }
 
-QString SerieTv::getShortDescription() const {
-    return QString("%1 (%2) - %3 episodes, %4 seasons")
+QString Film::getShortDescription() const {
+    return QString("%1 (%2) - %3 min")
            .arg(QString::fromStdString(getTitolo()))
            .arg(getAnno())
-           .arg(getNumEpisodi())
-           .arg(getNumStagioni());
+           .arg(getDurata());
 }
 
-bool SerieTv::matchesSearch(const QString& searchTerm) const {
+bool Film::matchesSearch(const QString& searchTerm) const {
     QString title = QString::fromStdString(getTitolo()).toLower();
-    QString ideatore = QString::fromStdString(getIdeatore()).toLower();
-    return title.contains(searchTerm.toLower()) || ideatore.contains(searchTerm.toLower());
+    QString director = QString::fromStdString(getRegista()).toLower();
+    return title.contains(searchTerm.toLower()) || director.contains(searchTerm.toLower());
 }
 
-QJsonObject SerieTv::getDetails() const {
-    return QString("Serie Tv: %1 (%2<thinking>
-The attempt to create or edit the file src/logic/film.cpp failed due to an editor error. To proceed, I will try a safer approach by reading the existing src/logic/film.cpp file content first, then prepare a precise edit patch to add the polymorphic virtual methods implementations. This approach avoids overwriting the entire file blindly and reduces the risk of editor errors.
-
-I will read the current src/logic/film.cpp file content now.
-</thinking>
-
-<read_file>
-<path>src/logic/film.cpp</path>
-</read_file>
+QJsonObject Film::toJson() const {
+    QJsonObject jsonObj;
+    jsonObj["type"] = "Film";
+    jsonObj["titolo"] = QString::fromStdString(getTitolo());
+    jsonObj["anno"] = getAnno();
+    jsonObj["immagine"] = QString::fromStdString(getImmagine());
+    jsonObj["regista"] = QString::fromStdString(getRegista());
+    jsonObj["attoreProtagonista"] = QString::fromStdString(getAttoreProtagonista());
+    jsonObj["durata"] = getDurata();
+    return jsonObj;
+}

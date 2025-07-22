@@ -17,16 +17,16 @@ bool JsonService::loadFromFile(const QString &filePath) {
         qWarning() << "Impossibile aprire il file:" << filePath;
         return false;
     }
-    
+
     QByteArray jsonData = file.readAll();
     file.close();
-    
+
     QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     if (doc.isNull()) {
         qWarning() << "Formato JSON non valido";
         return false;
     }
-    
+
     mediaArray = doc.object()["media"].toArray();
     return true;
 }
