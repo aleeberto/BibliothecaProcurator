@@ -273,36 +273,33 @@ QPixmap MainWindow::loadMediaImage(const std::string& imagePath)
 {
     QString imageQPath = QString::fromStdString(imagePath);
     QPixmap pixmap;
-    
-    // 1. Converti il percorso in assoluto se è relativo
+
     QFileInfo fileInfo(imageQPath);
     if (fileInfo.isRelative()) {
-        // Costruisci il percorso assoluto basato sulla directory dell'applicazione
         QString appDir = QCoreApplication::applicationDirPath();
-        imageQPath = QDir::cleanPath(appDir + QDir::separator() + imageQPath);
+        QString resourcesPath = QDir::cleanPath(appDir + QDir::separator() + "resources" + QDir::separator());
+        imageQPath = QDir::cleanPath(resourcesPath + imageQPath);
     }
-    
-    // 2. Prova a caricare l'immagine
+
     if (!pixmap.load(imageQPath)) {
-        // Creazione di un'immagine placeholder con informazioni di debug
         pixmap = QPixmap(120, 180);
         pixmap.fill(QColor(240, 240, 240));
-        
+
         QPainter painter(&pixmap);
         painter.setPen(Qt::darkGray);
         painter.setFont(QFont("Arial", 8));
-        
+
         QString debugInfo = QString("Impossibile caricare:\n%1\nPercorso risolto:\n%2")
                            .arg(QString::fromStdString(imagePath))
                            .arg(imageQPath);
-        
-        painter.drawText(pixmap.rect().adjusted(5, 5, -5, -5), 
-                        Qt::AlignCenter | Qt::TextWordWrap, 
+
+        painter.drawText(pixmap.rect().adjusted(5, 5, -5, -5),
+                        Qt::AlignCenter | Qt::TextWordWrap,
                         debugInfo);
-        
+
         qDebug() << "Errore caricamento immagine:" << debugInfo;
     }
-    
+
     return pixmap.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
