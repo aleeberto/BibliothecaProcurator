@@ -16,7 +16,6 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    // Window configuration
     this->setStyleSheet(
         "QMainWindow { background-color: #f5f5f5; } "
         "QLineEdit, QComboBox {"
@@ -39,12 +38,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     centralWidget->setStyleSheet("background: transparent;");
     setCentralWidget(centralWidget);
 
-    // Main layout
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-    // Left widget - Menu and categories
     QWidget *leftWidget = new QWidget();
     leftWidget->setStyleSheet("background-color: #fff; border-right: 1px solid #ddd;");
     leftWidget->setFixedWidth(220);
@@ -53,51 +50,39 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     leftLayout->setContentsMargins(5, 10, 5, 10);
     leftLayout->setSpacing(5);
 
-    // Top menu
     topMenu = new TopMenuWidget(this);
     leftLayout->addWidget(topMenu);
 
-    // Search bar
     setupSearchBar();
-
-    // Categories
     setupCategoryButtons();
 
     leftLayout->addStretch();
 
-    // Right widget - Main content
     rightWidget = new QWidget();
     rightLayout = new QVBoxLayout(rightWidget);
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
 
-    // Create item widget (hidden by default)
     createItemWidget = new CreateItemWidget(this);
     createItemWidget->hide();
 
-    // Scroll area for right content
     QScrollArea *rightScrollArea = new QScrollArea(this);
     rightScrollArea->setWidgetResizable(true);
     rightScrollArea->setWidget(rightWidget);
     rightScrollArea->setFrameShape(QFrame::NoFrame);
     rightScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // Add widgets to main layout
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightScrollArea, 1);
 
-    // Initialize jsonService
     jsonService = new JsonService(this);
 
-    // Set minimum window size
     setMinimumSize(900, 600);
 
-    // Load initial data
     if (QFile::exists(currentJsonPath)) {
         loadMediaData(currentJsonPath);
     }
 
-    // Connections
     connect(topMenu, &TopMenuWidget::uploadRequested, this, &MainWindow::handleUploadRequest);
     connect(topMenu, &TopMenuWidget::createRequested, this, &MainWindow::showCreateItemWidget);
     connect(topMenu, &TopMenuWidget::saveRequested, this, &MainWindow::saveCurrentData);
