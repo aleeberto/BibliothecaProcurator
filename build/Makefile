@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -std=gnu++1z -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../../app -I. -I../src -I../src/app -I../src/logic -I../src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I../../BibliothecaProcurator -I. -I../src -I../src/app -I../src/logic -I../src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,7 +37,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = my_project1.0.0
-DISTDIR = /app/app/build/.tmp/my_project1.0.0
+DISTDIR = /BibliothecaProcurator/BibliothecaProcurator/build/.tmp/my_project1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
@@ -428,7 +428,7 @@ moc_jsonService.cpp: ../src/app/jsonService.h \
 		../src/logic/media.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /app/app/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/app/app -I/app/app/src -I/app/app/src/app -I/app/app/src/logic -I/app/app/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/app/jsonService.h -o moc_jsonService.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator/src -I/BibliothecaProcurator/BibliothecaProcurator/src/app -I/BibliothecaProcurator/BibliothecaProcurator/src/logic -I/BibliothecaProcurator/BibliothecaProcurator/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/app/jsonService.h -o moc_jsonService.cpp
 
 moc_createItemWidget.cpp: ../src/ui/createItemWidget.h \
 		../src/logic/media.h \
@@ -442,7 +442,7 @@ moc_createItemWidget.cpp: ../src/ui/createItemWidget.h \
 		../src/logic/cd.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /app/app/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/app/app -I/app/app/src -I/app/app/src/app -I/app/app/src/logic -I/app/app/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/createItemWidget.h -o moc_createItemWidget.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator/src -I/BibliothecaProcurator/BibliothecaProcurator/src/app -I/BibliothecaProcurator/BibliothecaProcurator/src/logic -I/BibliothecaProcurator/BibliothecaProcurator/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/createItemWidget.h -o moc_createItemWidget.cpp
 
 moc_mainWindow.cpp: ../src/ui/mainWindow.h \
 		../src/ui/topMenuWidget.h \
@@ -459,12 +459,12 @@ moc_mainWindow.cpp: ../src/ui/mainWindow.h \
 		../src/app/jsonService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /app/app/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/app/app -I/app/app/src -I/app/app/src/app -I/app/app/src/logic -I/app/app/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/mainWindow.h -o moc_mainWindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator/src -I/BibliothecaProcurator/BibliothecaProcurator/src/app -I/BibliothecaProcurator/BibliothecaProcurator/src/logic -I/BibliothecaProcurator/BibliothecaProcurator/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/mainWindow.h -o moc_mainWindow.cpp
 
 moc_topMenuWidget.cpp: ../src/ui/topMenuWidget.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /app/app/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/app/app -I/app/app/src -I/app/app/src/app -I/app/app/src/logic -I/app/app/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/topMenuWidget.h -o moc_topMenuWidget.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator/src -I/BibliothecaProcurator/BibliothecaProcurator/src/app -I/BibliothecaProcurator/BibliothecaProcurator/src/logic -I/BibliothecaProcurator/BibliothecaProcurator/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/topMenuWidget.h -o moc_topMenuWidget.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
