@@ -337,4 +337,3 @@ void MainWindow::onSearchTextChanged(const QString& text)
     Q_UNUSED(text);
     displayMediaByCategory(currentCategory);
 }
-</edit_file>
