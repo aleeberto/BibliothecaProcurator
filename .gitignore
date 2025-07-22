@@ -1,0 +1,5 @@
+*.o
+.qmake.stash
+BibliothecaProcurator
+.vscode
+moc_*.cpp
