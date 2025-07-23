@@ -49,3 +49,6 @@ FORMS +=
 
 # File risorse Qt (.qrc) se presenti
 RESOURCES +=
+
+# Moc files
+MOCS += src/app/mediaService.h
