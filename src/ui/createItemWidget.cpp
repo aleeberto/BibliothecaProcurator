@@ -57,7 +57,22 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         imageInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         imageLayout->addWidget(imageLabel);
         imageLayout->addWidget(imageInput);
+
+        browseImageButton = new QPushButton("Sfoglia Immagine");
+        browseImageButton->setFixedHeight(30);
+        browseImageButton->setStyleSheet(
+            "QPushButton {"
+            "  background-color: #2196F3;"
+            "  color: white;"
+            "  border: none;"
+            "  border-radius: 5px;"
+            "  font-weight: bold;"
+            "}"
+            "QPushButton:hover { background-color: #1976D2; }"
+            "QPushButton:pressed { background-color: #1565C0; }"
+        );
         imageLayout->addWidget(browseImageButton);
+
         pageLayout->addLayout(imageLayout);
 
         addFieldWithPlaceholder(pageLayout, "Anno:", "Anno di pubblicazione");
@@ -72,34 +87,6 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         itemTypeCombo->addItem(type);
     }
 
-    createButton = new QPushButton("Crea Media", scrollContent);
-    createButton->setFixedHeight(40);
-    createButton->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #4CAF50;"
-        "  color: white;"
-        "  border: none;"
-        "  border-radius: 5px;"
-        "  font-weight: bold;"
-        "}"
-        "QPushButton:hover { background-color: #45a049; }"
-        "QPushButton:pressed { background-color: #3d8b40; }"
-    );
-
-    browseImageButton = new QPushButton("Sfoglia Immagine", scrollContent);
-    browseImageButton->setFixedHeight(30);
-    browseImageButton->setStyleSheet(
-        "QPushButton {"
-        "  background-color: #2196F3;"
-        "  color: white;"
-        "  border: none;"
-        "  border-radius: 5px;"
-        "  font-weight: bold;"
-        "}"
-        "QPushButton:hover { background-color: #1976D2; }"
-        "QPushButton:pressed { background-color: #1565C0; }"
-    );
-
     connect(itemTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CreateItemWidget::onItemTypeChanged);
     connect(createButton, &QPushButton::clicked,
@@ -110,7 +97,6 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     contentLayout->addWidget(label);
     contentLayout->addWidget(itemTypeCombo);
     contentLayout->addWidget(stackedFields);
-    contentLayout->addWidget(browseImageButton);
     contentLayout->addWidget(createButton);
 
     mainLayout->addWidget(scrollArea);
@@ -270,4 +256,26 @@ void CreateItemWidget::onItemTypeChanged(int index)
 {
     stackedFields->setCurrentIndex(index);
 }
-</edit_file>
+
+void CreateItemWidget::onBrowseImageClicked()
+{
+    QWidget* currentPage = stackedFields->currentWidget();
+    QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
+
+    if (fields.size() < 2) {
+        return; // No image field found
+    }
+
+    QLineEdit* imageField = fields[1]; // Assuming second field is "Immagine"
+
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Seleziona immagine"),
+        QDir::homePath(),
+        tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
+    );
+
+    if (!filePath.isEmpty()) {
+        imageField->setText(filePath);
+    }
+}
