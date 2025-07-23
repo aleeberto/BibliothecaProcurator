@@ -8,8 +8,9 @@
 #include <QLineEdit>
 #include "topMenuWidget.h"
 #include "createItemWidget.h"
-#include "../app/jsonService.h"
 #include "../logic/media.h"
+
+class MediaService;
 
 class MainWindow : public QMainWindow
 {
