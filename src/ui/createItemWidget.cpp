@@ -1,6 +1,10 @@
 #include "createItemWidget.h"
 #include <QScrollArea>
 #include <QDebug>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QFileDialog>
 
 CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 {
@@ -46,11 +50,12 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 
         // Create horizontal layout for image input and browse button
         QHBoxLayout* imageLayout = new QHBoxLayout();
+        QLabel* imageLabel = new QLabel("Immagine:");
         QLineEdit* imageInput = new QLineEdit();
         imageInput->setPlaceholderText("Percorso dell'immagine");
         imageInput->setMinimumHeight(30);
         imageInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        imageLayout->addWidget(new QLabel("Immagine:"));
+        imageLayout->addWidget(imageLabel);
         imageLayout->addWidget(imageInput);
         imageLayout->addWidget(browseImageButton);
         pageLayout->addLayout(imageLayout);
@@ -265,26 +270,4 @@ void CreateItemWidget::onItemTypeChanged(int index)
 {
     stackedFields->setCurrentIndex(index);
 }
-
-void CreateItemWidget::onBrowseImageClicked()
-{
-    QWidget* currentPage = stackedFields->currentWidget();
-    QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
-
-    if (fields.size() < 2) {
-        return; // No image field found
-    }
-
-    QLineEdit* imageField = fields[1]; // Assuming second field is "Immagine"
-
-    QString filePath = QFileDialog::getOpenFileName(
-        this,
-        tr("Seleziona immagine"),
-        QDir::homePath(),
-        tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
-    );
-
-    if (!filePath.isEmpty()) {
-        imageField->setText(filePath);
-    }
-}
+</edit_file>
