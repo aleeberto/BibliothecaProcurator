@@ -76,8 +76,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setMinimumSize(900, 600);
 
     if (QFile::exists(currentJsonPath)) {
-        jsonService->loadFromFile(currentJsonPath);
-        mediaCollection = jsonService->getAllMedia();
+        mediaService->loadMedia(currentJsonPath);
         displayMediaByCategory(currentCategory);
     }
 
@@ -89,8 +88,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
-    qDeleteAll(mediaCollection);
-    delete jsonService;
+    delete mediaService;
 }
 
 void MainWindow::setupCategoryButtons()
