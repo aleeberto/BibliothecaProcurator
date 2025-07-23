@@ -34,6 +34,7 @@ signals:
 public slots:
     void onItemTypeChanged(int index);
     void onBrowseImageClicked();
+    void onCreateButtonClicked();
 
 private:
     void addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder);
