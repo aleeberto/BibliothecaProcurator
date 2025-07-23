@@ -40,7 +40,8 @@ private:
     QWidget *rightWidget;
     QVBoxLayout *rightLayout;
     QVBoxLayout *leftLayout;
-    MediaService *mediaService;
+    JsonService *jsonService;
+    QVector<Media*> mediaCollection;
     QString currentJsonPath = "biblioteca.json";
     QString currentCategory = "Tutti";
     QLineEdit *searchBar;
