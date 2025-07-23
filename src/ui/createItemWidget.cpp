@@ -275,3 +275,26 @@ void CreateItemWidget::onBrowseImageClicked()
         imageField->setText(filePath);
     }
 }
+
+void CreateItemWidget::onBrowseImageClicked()
+{
+    QWidget* currentPage = stackedFields->currentWidget();
+    QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
+
+    if (fields.size() < 2) {
+        return; // No image field found
+    }
+
+    QLineEdit* imageField = fields[1]; // Assuming second field is "Immagine"
+
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        tr("Seleziona immagine"),
+        QDir::homePath(),
+        tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
+    );
+
+    if (!filePath.isEmpty()) {
+        imageField->setText(filePath);
+    }
+}
