@@ -14,6 +14,7 @@ INCLUDEPATH += src \
 SOURCES += \
     src/main.cpp \
     src/app/jsonService.cpp \
+    src/app/mediaService.cpp \
     src/logic/anime.cpp \
     src/logic/cartaceo.cpp \
     src/logic/cd.cpp \
