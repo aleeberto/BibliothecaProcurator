@@ -9,7 +9,6 @@
 #include "topMenuWidget.h"
 #include "createItemWidget.h"
 #include "../app/jsonService.h"
-#include "../app/mediaService.h"
 #include "../logic/media.h"
 
 class MainWindow : public QMainWindow
