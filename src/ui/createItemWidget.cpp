@@ -16,6 +16,8 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollContent);
     scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QLabel *label = new QLabel("Seleziona il tipo di oggetto:", scrollContent);
@@ -41,7 +43,18 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         pageLayout->setSpacing(8);
 
         addFieldWithPlaceholder(pageLayout, "Titolo:", "Inserisci il titolo");
-        addFieldWithPlaceholder(pageLayout, "Immagine:", "Percorso dell'immagine");
+
+        // Create horizontal layout for image input and browse button
+        QHBoxLayout* imageLayout = new QHBoxLayout();
+        QLineEdit* imageInput = new QLineEdit();
+        imageInput->setPlaceholderText("Percorso dell'immagine");
+        imageInput->setMinimumHeight(30);
+        imageInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        imageLayout->addWidget(new QLabel("Immagine:"));
+        imageLayout->addWidget(imageInput);
+        imageLayout->addWidget(browseImageButton);
+        pageLayout->addLayout(imageLayout);
+
         addFieldWithPlaceholder(pageLayout, "Anno:", "Anno di pubblicazione");
 
         for (const QString& field : mediaFields[type]) {
