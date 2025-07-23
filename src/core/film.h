@@ -20,12 +20,6 @@ class Film : public Media{
         void setRegista(const string &updRegista);
         void setAttoreProtagonista(const string &updAttoreProtagonista);
         void setDurata(const int &durata);
-
-        QString getDetails() const override;
-        QString getTypeName() const override;
-        QString getShortDescription() const override;
-        bool matchesSearch(const QString& searchTerm) const override;
-        QJsonObject toJson() const override;
 };
 
 #endif

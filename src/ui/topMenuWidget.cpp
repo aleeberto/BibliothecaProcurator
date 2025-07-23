@@ -11,9 +11,9 @@ TopMenuWidget::TopMenuWidget(QWidget* parent) : QWidget(parent) {
     QPushButton* btnCreate = new QPushButton(this);
 
     // Imposta le icone
-    btnUpload->setIcon(QIcon("./resources/icon/upload.png"));
-    btnSave->setIcon(QIcon("./resources/icon/save.png"));
-    btnCreate->setIcon(QIcon("./resources/icon/add.png"));
+    btnUpload->setIcon(QIcon("../resources/icon/upload.png"));
+    btnSave->setIcon(QIcon("../resources/icon/save.png"));
+    btnCreate->setIcon(QIcon("../resources/icon/add.png"));
 
     // Imposta dimensioni e stili
     QSize buttonSize(40, 40);

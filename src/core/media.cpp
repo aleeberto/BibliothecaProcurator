@@ -26,24 +26,3 @@ void Media::setAnno(const int &updAnno){
 void Media::setImmagine(const string &updImmagine){
     immagine = updImmagine;
 }
-
-QString Media::getDetails() const {
-    return QString();
-}
-
-QString Media::getTypeName() const {
-    return QString();
-}
-
-QString Media::getShortDescription() const {
-    return QString();
-}
-
-bool Media::matchesSearch(const QString& searchTerm) const {
-    Q_UNUSED(searchTerm);
-    return false;
-}
-
-QJsonObject Media::toJson() const {
-    return QJsonObject();
-}

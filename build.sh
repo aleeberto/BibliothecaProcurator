@@ -1,5 +1,8 @@
 #!/bin/bash
 mkdir -p build
 cd build
-qmake ../bibliotecaprocurator.pro
+make clean
+qmake ../BibliothecaProcurator.pro
 make
+cd build
+./BibliothecaProcurator

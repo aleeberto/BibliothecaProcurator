@@ -2,12 +2,12 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QDebug>
-#include "../logic/film.h"
-#include "../logic/serieTv.h"
-#include "../logic/anime.h"
-#include "../logic/libro.h"
-#include "../logic/manga.h"
-#include "../logic/cd.h"
+#include "../core/film.h"
+#include "../core/serieTv.h"
+#include "../core/anime.h"
+#include "../core/libro.h"
+#include "../core/manga.h"
+#include "../core/cd.h"
 
 JsonService::JsonService(QObject *parent) : QObject(parent) {}
 
@@ -17,16 +17,16 @@ bool JsonService::loadFromFile(const QString &filePath) {
         qWarning() << "Impossibile aprire il file:" << filePath;
         return false;
     }
-
+    
     QByteArray jsonData = file.readAll();
     file.close();
-
+    
     QJsonDocument doc = QJsonDocument::fromJson(jsonData);
     if (doc.isNull()) {
         qWarning() << "Formato JSON non valido";
         return false;
     }
-
+    
     mediaArray = doc.object()["media"].toArray();
     return true;
 }

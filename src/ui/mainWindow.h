@@ -8,9 +8,8 @@
 #include <QLineEdit>
 #include "topMenuWidget.h"
 #include "createItemWidget.h"
-#include "../logic/media.h"
-
-#include "../app/mediaService.h"
+#include "../services/jsonService.h"
+#include "../core/media.h"
 
 class MainWindow : public QMainWindow
 {
@@ -28,6 +27,7 @@ private slots:
     void onSearchTextChanged(const QString& text);
 
 private:
+    void loadMediaData(const QString &filePath);
     void clearCurrentMedia();
     void displayMediaByCategory(const QString &category);
     void setupCategoryButtons();
@@ -40,11 +40,12 @@ private:
     QWidget *rightWidget;
     QVBoxLayout *rightLayout;
     QVBoxLayout *leftLayout;
-    MediaService *mediaService;
+    JsonService *jsonService;
+    QVector<Media*> mediaCollection;
+    QMap<QString, QPushButton*> categoryButtons;
     QString currentJsonPath = "biblioteca.json";
     QString currentCategory = "Tutti";
     QLineEdit *searchBar;
-    QMap<QString, QPushButton*> categoryButtons;
 };
 
 #endif // MAINWINDOW_H

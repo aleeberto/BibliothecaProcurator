@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>
-#include "../logic/media.h"
+#include "../core/media.h"
 
 class JsonService : public QObject
 {

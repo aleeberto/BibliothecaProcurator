@@ -9,11 +9,14 @@
 #include <QDir>
 #include <QPixmap>
 #include <QPainter>
+#include <QDir>
 #include <QFileInfo>
-#include <QCoreApplication>
+#include <QPainter>
+#include <QCoreApplication> 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+    // Window configuration
     this->setStyleSheet(
         "QMainWindow { background-color: #f5f5f5; } "
         "QLineEdit, QComboBox {"
@@ -36,10 +39,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     centralWidget->setStyleSheet("background: transparent;");
     setCentralWidget(centralWidget);
 
+    // Main layout
     QHBoxLayout *mainLayout = new QHBoxLayout(centralWidget);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
+    // Left widget - Menu and categories
     QWidget *leftWidget = new QWidget();
     leftWidget->setStyleSheet("background-color: #fff; border-right: 1px solid #ddd;");
     leftWidget->setFixedWidth(220);
@@ -48,38 +53,51 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     leftLayout->setContentsMargins(5, 10, 5, 10);
     leftLayout->setSpacing(5);
 
+    // Top menu
     topMenu = new TopMenuWidget(this);
     leftLayout->addWidget(topMenu);
 
+    // Search bar
     setupSearchBar();
+
+    // Categories
     setupCategoryButtons();
 
     leftLayout->addStretch();
 
+    // Right widget - Main content
     rightWidget = new QWidget();
     rightLayout = new QVBoxLayout(rightWidget);
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
 
+    // Create item widget (hidden by default)
     createItemWidget = new CreateItemWidget(this);
     createItemWidget->hide();
 
+    // Scroll area for right content
     QScrollArea *rightScrollArea = new QScrollArea(this);
     rightScrollArea->setWidgetResizable(true);
     rightScrollArea->setWidget(rightWidget);
     rightScrollArea->setFrameShape(QFrame::NoFrame);
     rightScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    // Add widgets to main layout
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightScrollArea, 1);
 
+    // Initialize jsonService
+    jsonService = new JsonService(this);
+
+    // Set minimum window size
     setMinimumSize(900, 600);
 
+    // Load initial data
     if (QFile::exists(currentJsonPath)) {
-        mediaService->loadMedia(currentJsonPath);
-        displayMediaByCategory(currentCategory);
+        loadMediaData(currentJsonPath);
     }
 
+    // Connections
     connect(topMenu, &TopMenuWidget::uploadRequested, this, &MainWindow::handleUploadRequest);
     connect(topMenu, &TopMenuWidget::createRequested, this, &MainWindow::showCreateItemWidget);
     connect(topMenu, &TopMenuWidget::saveRequested, this, &MainWindow::saveCurrentData);
@@ -88,7 +106,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 MainWindow::~MainWindow()
 {
-    delete mediaService;
+    qDeleteAll(mediaCollection);
+    delete jsonService;
 }
 
 void MainWindow::setupCategoryButtons()
@@ -117,6 +136,7 @@ void MainWindow::setupCategoryButtons()
             currentCategory = category;
             displayMediaByCategory(category);
 
+            // Update button states
             for (QPushButton *button : categoryButtons) {
                 button->setChecked(button->text() == category);
             }
@@ -146,16 +166,37 @@ void MainWindow::setupSearchBar()
     leftLayout->addWidget(searchBar);
 }
 
+void MainWindow::loadMediaData(const QString &filePath)
+{
+    if (jsonService->loadFromFile(filePath)) {
+        clearCurrentMedia();
+        qDeleteAll(mediaCollection);
+        mediaCollection.clear();
+
+        QVector<Media*> loadedMedia = jsonService->getAllMedia();
+        for (Media* media : loadedMedia) {
+            mediaCollection.append(media);
+        }
+
+        currentJsonPath = filePath;
+        displayMediaByCategory(currentCategory);
+    }
+}
+
 void MainWindow::displayMediaByCategory(const QString &category)
 {
     clearCurrentMedia();
 
     QString searchText = searchBar->text().toLower();
+    
+    for (Media* media : mediaCollection) {
+        QString mediaType = jsonService->getMediaTypeName(media);
+        QString mediaTitle = QString::fromStdString(media->getTitolo()).toLower();
 
-    QVector<Media*> filteredMedia = mediaService->filterMedia(category, searchText);
-
-    for (Media* media : filteredMedia) {
-        addMediaCardToLayout(media);
+        if ((category == "Tutti" || mediaType == category) &&
+            (searchText.isEmpty() || mediaTitle.contains(searchText))) {
+            addMediaCardToLayout(media);
+        }
     }
 
     rightLayout->addStretch();
@@ -176,10 +217,12 @@ void MainWindow::addMediaCardToLayout(Media* media)
     QHBoxLayout *cardLayout = new QHBoxLayout(mediaCard);
     cardLayout->setContentsMargins(10, 10, 10, 10);
 
+    // Image
     QLabel *imgLabel = new QLabel();
     imgLabel->setPixmap(loadMediaImage(media->getImmagine()));
     imgLabel->setAlignment(Qt::AlignTop);
 
+    // Details
     QWidget *detailsWidget = new QWidget();
     QVBoxLayout *detailsLayout = new QVBoxLayout(detailsWidget);
     detailsLayout->setAlignment(Qt::AlignTop);
@@ -188,12 +231,13 @@ void MainWindow::addMediaCardToLayout(Media* media)
     titleLabel->setStyleSheet("font-size: 14px;");
 
     QLabel *yearLabel = new QLabel("Anno: " + QString::number(media->getAnno()));
-    QLabel *typeLabel = new QLabel("Tipo: " + media->getTypeName());
+    QLabel *typeLabel = new QLabel("Tipo: " + jsonService->getMediaTypeName(media));
 
     detailsLayout->addWidget(titleLabel);
     detailsLayout->addWidget(yearLabel);
     detailsLayout->addWidget(typeLabel);
 
+    // Add type-specific fields
     if (auto film = dynamic_cast<Film*>(media)) {
         detailsLayout->addWidget(new QLabel("Regista: " + QString::fromStdString(film->getRegista())));
         detailsLayout->addWidget(new QLabel("Protagonista: " + QString::fromStdString(film->getAttoreProtagonista())));
@@ -244,33 +288,36 @@ QPixmap MainWindow::loadMediaImage(const std::string& imagePath)
 {
     QString imageQPath = QString::fromStdString(imagePath);
     QPixmap pixmap;
-
+    
+    // 1. Converti il percorso in assoluto se è relativo
     QFileInfo fileInfo(imageQPath);
     if (fileInfo.isRelative()) {
+        // Costruisci il percorso assoluto basato sulla directory dell'applicazione
         QString appDir = QCoreApplication::applicationDirPath();
-        QString normalizedPath = QDir::cleanPath(appDir + QDir::separator() + imageQPath);
-        imageQPath = normalizedPath;
+        imageQPath = QDir::cleanPath(appDir + QDir::separator() + imageQPath);
     }
-
+    
+    // 2. Prova a caricare l'immagine
     if (!pixmap.load(imageQPath)) {
+        // Creazione di un'immagine placeholder con informazioni di debug
         pixmap = QPixmap(120, 180);
         pixmap.fill(QColor(240, 240, 240));
-
+        
         QPainter painter(&pixmap);
         painter.setPen(Qt::darkGray);
         painter.setFont(QFont("Arial", 8));
-
+        
         QString debugInfo = QString("Impossibile caricare:\n%1\nPercorso risolto:\n%2")
                            .arg(QString::fromStdString(imagePath))
                            .arg(imageQPath);
-
-        painter.drawText(pixmap.rect().adjusted(5, 5, -5, -5),
-                        Qt::AlignCenter | Qt::TextWordWrap,
+        
+        painter.drawText(pixmap.rect().adjusted(5, 5, -5, -5), 
+                        Qt::AlignCenter | Qt::TextWordWrap, 
                         debugInfo);
-
+        
         qDebug() << "Errore caricamento immagine:" << debugInfo;
     }
-
+    
     return pixmap.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
@@ -293,18 +340,22 @@ void MainWindow::handleUploadRequest()
         QDir::homePath(),
         tr("File JSON (*.json)")
     );
-
+    
     if (!filePath.isEmpty()) {
-        mediaService->loadMedia(filePath);
-        displayMediaByCategory(currentCategory);
+        loadMediaData(filePath);
         QMessageBox::information(this, "Successo", "File caricato correttamente!");
     }
 }
 
 void MainWindow::saveCurrentData()
 {
-    if (mediaService->saveMedia(currentJsonPath)) {
-        QMessageBox::information(this, "Successo",
+    jsonService->clearAll();
+    for (Media* media : mediaCollection) {
+        jsonService->addMedia(media);
+    }
+
+    if (jsonService->saveToFile(currentJsonPath)) {
+        QMessageBox::information(this, "Successo", 
             "Dati salvati correttamente in:\n" + QDir::toNativeSeparators(currentJsonPath));
     } else {
         QMessageBox::critical(this, "Errore",
@@ -325,7 +376,8 @@ void MainWindow::showCreateItemWidget()
 void MainWindow::onMediaItemCreated(Media* newItem)
 {
     if (newItem) {
-        mediaService->addMedia(newItem);
+        mediaCollection.append(newItem);
+        jsonService->addMedia(newItem);
         displayMediaByCategory(currentCategory);
         createItemWidget->hide();
     }
@@ -333,6 +385,6 @@ void MainWindow::onMediaItemCreated(Media* newItem)
 
 void MainWindow::onSearchTextChanged(const QString& text)
 {
-    Q_UNUSED(text);
+    Q_UNUSED(text);  // Silenzia l'avviso del parametro non utilizzato
     displayMediaByCategory(currentCategory);
 }
