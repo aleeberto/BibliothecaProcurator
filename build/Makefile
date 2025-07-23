@@ -149,7 +149,6 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		../.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -268,7 +267,6 @@ Makefile: ../bibliotecaprocurator.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linu
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -352,7 +350,6 @@ Makefile: ../bibliotecaprocurator.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linu
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -457,6 +454,7 @@ moc_mainWindow.cpp: ../src/ui/mainWindow.h \
 		../src/logic/manga.h \
 		../src/logic/cd.h \
 		../src/app/jsonService.h \
+		../src/app/mediaService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator/src -I/BibliothecaProcurator/BibliothecaProcurator/src/app -I/BibliothecaProcurator/BibliothecaProcurator/src/logic -I/BibliothecaProcurator/BibliothecaProcurator/src/ui -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/mainWindow.h -o moc_mainWindow.cpp
@@ -494,7 +492,8 @@ main.o: ../src/main.cpp ../src/ui/mainWindow.h \
 		../src/logic/cartaceo.h \
 		../src/logic/manga.h \
 		../src/logic/cd.h \
-		../src/app/jsonService.h
+		../src/app/jsonService.h \
+		../src/app/mediaService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../src/main.cpp
 
 jsonService.o: ../src/app/jsonService.cpp ../src/app/jsonService.h \
@@ -572,7 +571,8 @@ mainWindow.o: ../src/ui/mainWindow.cpp ../src/ui/mainWindow.h \
 		../src/logic/cartaceo.h \
 		../src/logic/manga.h \
 		../src/logic/cd.h \
-		../src/app/jsonService.h
+		../src/app/jsonService.h \
+		../src/app/mediaService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainWindow.o ../src/ui/mainWindow.cpp
 
 topMenuWidget.o: ../src/ui/topMenuWidget.cpp ../src/ui/topMenuWidget.h
