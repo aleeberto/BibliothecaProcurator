@@ -10,15 +10,15 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "../logic/media.h"
-#include "../logic/series.h"
-#include "../logic/anime.h"
-#include "../logic/serieTv.h"
-#include "../logic/film.h"
-#include "../logic/libro.h"
-#include "../logic/manga.h"
-#include "../logic/cd.h"
-#include "../logic/cartaceo.h"
+#include "../core/media.h"
+#include "../core/series.h"
+#include "../core/anime.h"
+#include "../core/serieTv.h"
+#include "../core/film.h"
+#include "../core/libro.h"
+#include "../core/manga.h"
+#include "../core/cd.h"
+#include "../core/cartaceo.h"
 
 class CreateItemWidget : public QWidget
 {
