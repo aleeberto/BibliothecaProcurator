@@ -1,5 +1,4 @@
 #include "mainWindow.h"
-#include "app/mediaService.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -13,7 +12,7 @@
 #include <QFileInfo>
 #include <QCoreApplication>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaService(new MediaService(this))
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     this->setStyleSheet(
         "QMainWindow { background-color: #f5f5f5; } "
@@ -77,8 +76,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaService(new 
     setMinimumSize(900, 600);
 
     if (QFile::exists(currentJsonPath)) {
-        mediaService->loadMedia(currentJsonPath);
-        displayMediaByCategory(currentCategory);
+        loadMediaData(currentJsonPath);
     }
 
     connect(topMenu, &TopMenuWidget::uploadRequested, this, &MainWindow::handleUploadRequest);
@@ -89,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mediaService(new 
 
 MainWindow::~MainWindow()
 {
-    delete mediaService;
+    qDeleteAll(mediaCollection);
 }
 
 void MainWindow::setupCategoryButtons()
