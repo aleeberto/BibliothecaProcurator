@@ -10,7 +10,7 @@
 #include "createItemWidget.h"
 #include "../logic/media.h"
 
-class MediaService;
+#include "../app/mediaService.h"
 
 class MainWindow : public QMainWindow
 {
