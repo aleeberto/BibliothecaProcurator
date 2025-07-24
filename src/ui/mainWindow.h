@@ -29,6 +29,8 @@ private slots:
 
 private:
     void loadMediaData(const QString &filePath);
+    void setupCategoryButtons();
+    void setupSearchBar();
 
     TopMenuWidget* topMenu;
     CreateItemWidget* createItemWidget;
