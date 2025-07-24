@@ -163,8 +163,8 @@ void MainWindow::setupSearchBar()
 void MainWindow::loadMediaData(const QString &filePath)
 {
     if (jsonService->loadFromFile(filePath)) {
-        mediaCollection.clear();
         qDeleteAll(mediaCollection);
+        mediaCollection.clear();
 
         QVector<Media*> loadedMedia = jsonService->getAllMedia();
         for (Media* media : loadedMedia) {
