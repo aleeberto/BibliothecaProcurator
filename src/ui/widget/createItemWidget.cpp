@@ -1,6 +1,8 @@
 #include "createItemWidget.h"
 #include <QScrollArea>
 #include <QDebug>
+#include <QFileDialog>
+#include <QDir>
 
 CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 {
