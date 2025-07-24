@@ -2,17 +2,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 #include <QVector>
-#include <QMap>
-#include <QPushButton>
-#include <QLineEdit>
-#include "topMenuWidget.h"
-#include "createItemWidget.h"
-#include "../services/jsonService.h"
+#include <QMessageBox>
 #include "../core/media.h"
+#include "../services/dbManagerService.h"
+#include "../ui/topMenuWidget.h"
+#include "../ui/createItemWidget.h"
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -20,32 +19,26 @@ public:
     ~MainWindow();
 
 private slots:
-    void showCreateItemWidget();
-    void onMediaItemCreated(Media* newItem);
-    void handleUploadRequest();
-    void saveCurrentData();
-    void onSearchTextChanged(const QString& text);
+    void onUploadRequested();
+    void onSaveRequested();
+    void onCreateRequested();
+    void onItemCreated(Media* item);
+    void onMediaSelected(Media* item);
 
 private:
-    void loadMediaData(const QString &filePath);
-    void clearCurrentMedia();
-    void displayMediaByCategory(const QString &category);
-    void setupCategoryButtons();
-    void setupSearchBar();
-    void addMediaCardToLayout(Media* media);
-    QPixmap loadMediaImage(const std::string& imagePath);
+    void setupUi();
+    void showHomePage();
+    void showCreatePage();
+    void showDetailPage(Media* item);
 
-    TopMenuWidget* topMenu;
-    CreateItemWidget* createItemWidget;
-    QWidget *rightWidget;
-    QVBoxLayout *rightLayout;
-    QVBoxLayout *leftLayout;
-    JsonService *jsonService;
-    QVector<Media*> mediaCollection;
-    QMap<QString, QPushButton*> categoryButtons;
-    QString currentJsonPath = "biblioteca.json";
-    QString currentCategory = "Tutti";
-    QLineEdit *searchBar;
+    DbManagerService dbManager;
+    QVector<Media*> mediaItems;
+
+    QWidget *central;
+    QVBoxLayout *mainLayout;
+    TopMenuWidget *topMenu;
+    QStackedWidget *stackedPages;
+    CreateItemWidget *createWidget;
 };
 
 #endif // MAINWINDOW_H

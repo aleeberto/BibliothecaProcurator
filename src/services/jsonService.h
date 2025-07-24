@@ -2,7 +2,6 @@
 #define JSONSERVICE_HEADER
 
 #include <QObject>
-#include <QJsonArray>
 #include <QJsonObject>
 #include "../core/media.h"
 
@@ -11,21 +10,8 @@ class JsonService : public QObject
     Q_OBJECT
 public:
     explicit JsonService(QObject *parent = nullptr);
-    
-    bool loadFromFile(const QString &filePath);
-    bool saveToFile(const QString &filePath);
-    
-    QVector<Media*> getAllMedia() const;
-    void addMedia(Media *media);
-    bool removeMedia(const QString &title);
-    Media* findMedia(const QString &title) const;
-    void clearAll();
-    
-    QString getMediaTypeName(Media* media) const;
 
-private:
-    QJsonArray mediaArray;
-    
+    // Conversioni JSON <-> Media
     Media* jsonToMedia(const QJsonObject &jsonObj) const;
     QJsonObject mediaToJson(Media *media) const;
 };

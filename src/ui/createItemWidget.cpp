@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QFileDialog>
+#include <QDir>
 
 CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 {
@@ -46,19 +47,21 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         pageLayout->setContentsMargins(5, 5, 5, 5);
         pageLayout->setSpacing(8);
 
+        // Titolo
         addFieldWithPlaceholder(pageLayout, "Titolo:", "Inserisci il titolo");
 
-        // Create horizontal layout for image input and browse button
+        // Layout orizzontale per immagine + input + pulsante sfoglia
         QHBoxLayout* imageLayout = new QHBoxLayout();
         QLabel* imageLabel = new QLabel("Immagine:");
         QLineEdit* imageInput = new QLineEdit();
         imageInput->setPlaceholderText("Percorso dell'immagine");
         imageInput->setMinimumHeight(30);
         imageInput->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
         imageLayout->addWidget(imageLabel);
         imageLayout->addWidget(imageInput);
 
-        browseImageButton = new QPushButton("Sfoglia Immagine");
+        QPushButton* browseImageButton = new QPushButton("Sfoglia Immagine");
         browseImageButton->setFixedHeight(30);
         browseImageButton->setStyleSheet(
             "QPushButton {"
@@ -75,8 +78,10 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 
         pageLayout->addLayout(imageLayout);
 
+        // Anno
         addFieldWithPlaceholder(pageLayout, "Anno:", "Anno di pubblicazione");
 
+        // Altri campi specifici
         for (const QString& field : mediaFields[type]) {
             addFieldWithPlaceholder(pageLayout, field + ":", "Inserisci " + field);
         }
@@ -85,15 +90,48 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         page->setLayout(pageLayout);
         stackedFields->addWidget(page);
         itemTypeCombo->addItem(type);
+
+        // Collegamento del pulsante "Sfoglia Immagine" solo per questa pagina
+        connect(browseImageButton, &QPushButton::clicked, this, [this, page]() {
+            QList<QLineEdit*> fields = page->findChildren<QLineEdit*>();
+            if (fields.size() < 2) return;
+            QLineEdit* imageField = fields[1]; // Il campo immagine è il secondo QLineEdit aggiunto
+
+            QString filePath = QFileDialog::getOpenFileName(
+                this,
+                tr("Seleziona immagine"),
+                QDir::homePath(),
+                tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
+            );
+
+            if (!filePath.isEmpty()) {
+                imageField->setText(filePath);
+            }
+        });
     }
 
+    // Pulsante CREA OGGETTO (una sola volta, sotto lo stack)
+    createButton = new QPushButton("Crea Oggetto", scrollContent);
+    createButton->setStyleSheet(
+        "QPushButton {"
+        "  background-color: #71e871;"
+        "  color: white;"
+        "  border: none;"
+        "  border-radius: 5px;"
+        "  font-weight: bold;"
+        "}"
+        "QPushButton:hover { background-color: #21f321; }"
+        "QPushButton:pressed { background-color: #1fbe1f; }"
+    );
+    createButton->setFixedHeight(30);
+
+    // Connect signals
     connect(itemTypeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CreateItemWidget::onItemTypeChanged);
     connect(createButton, &QPushButton::clicked,
             this, &CreateItemWidget::onCreateButtonClicked);
-    connect(browseImageButton, &QPushButton::clicked,
-            this, &CreateItemWidget::onBrowseImageClicked);
 
+    // Aggiunta widget alla layout
     contentLayout->addWidget(label);
     contentLayout->addWidget(itemTypeCombo);
     contentLayout->addWidget(stackedFields);
@@ -101,6 +139,7 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 
     mainLayout->addWidget(scrollArea);
     setLayout(mainLayout);
+
     onItemTypeChanged(0);
 }
 
@@ -123,7 +162,6 @@ Media* CreateItemWidget::createMediaItem() const
     QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
     QString type = itemTypeCombo->currentText();
 
-    // Validate all fields are filled
     for (QLineEdit* field : fields) {
         if (field->text().isEmpty()) {
             QMessageBox::warning(const_cast<QWidget*>(parentWidget()),
@@ -199,57 +237,36 @@ Media* CreateItemWidget::createMediaItem() const
             if (conclusoStr == "true" || conclusoStr == "1") concluso = true;
             else if (conclusoStr == "false" || conclusoStr == "0") concluso = false;
             else throw std::invalid_argument("Valore non valido per 'Concluso'");
-
+                
             return new Manga(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toStdString(),
-                fields[5]->text().toInt(),
-                concluso
+                fields[0]->text().toStdString(),    // titolo
+                fields[2]->text().toInt(),          // anno
+                fields[1]->text().toStdString(),    // immagine
+                fields[3]->text().toStdString(),    // scrittore
+                fields[4]->text().toStdString(),    // illustratore
+                fields[5]->text().toInt(),          // numLibri
+                concluso                           // concluso
             );
         }
         else if (type == "Cd") {
             return new Cd(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toInt(),
-                fields[5]->text().toInt()
+                fields[0]->text().toStdString(),    // titolo
+                fields[2]->text().toInt(),          // anno
+                fields[1]->text().toStdString(),    // immagine
+                fields[3]->text().toStdString(),    // artista
+                fields[4]->text().toInt(),          // numTracce
+                fields[5]->text().toInt()           // durataMedTracce
             );
         }
-    }
-    catch (const std::exception& e) {
-        QMessageBox::critical(const_cast<QWidget*>(parentWidget()),
-            "Errore",
-            QString("Dati non validi: %1").arg(e.what()));
-        return nullptr;
-    }
-    catch (...) {
-        QMessageBox::critical(const_cast<QWidget*>(parentWidget()),
-            "Errore",
-            "Si è verificato un errore sconosciuto durante la creazione del media");
+
+    } catch (std::exception& e) {
+        QMessageBox::warning(const_cast<QWidget*>(parentWidget()),
+                             "Errore",
+                             e.what());
         return nullptr;
     }
 
     return nullptr;
-}
-
-void CreateItemWidget::onCreateButtonClicked()
-{
-    Media* newItem = createMediaItem();
-    if (newItem) {
-        emit itemCreated(newItem);
-
-        // Clear all fields
-        QWidget* currentPage = stackedFields->currentWidget();
-        QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
-        for (QLineEdit* field : fields) {
-            field->clear();
-        }
-    }
 }
 
 void CreateItemWidget::onItemTypeChanged(int index)
@@ -257,25 +274,11 @@ void CreateItemWidget::onItemTypeChanged(int index)
     stackedFields->setCurrentIndex(index);
 }
 
-void CreateItemWidget::onBrowseImageClicked()
+void CreateItemWidget::onCreateButtonClicked()
 {
-    QWidget* currentPage = stackedFields->currentWidget();
-    QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
-
-    if (fields.size() < 2) {
-        return; // No image field found
-    }
-
-    QLineEdit* imageField = fields[1]; // Assuming second field is "Immagine"
-
-    QString filePath = QFileDialog::getOpenFileName(
-        this,
-        tr("Seleziona immagine"),
-        QDir::homePath(),
-        tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
-    );
-
-    if (!filePath.isEmpty()) {
-        imageField->setText(filePath);
+    Media* newItem = createMediaItem();
+    if (newItem) {
+        emit itemCreated(newItem);
+        QMessageBox::information(this, "Successo", "Oggetto creato con successo!");
     }
 }

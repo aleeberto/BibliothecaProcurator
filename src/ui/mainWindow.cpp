@@ -67,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // Right widget - Main content
     rightWidget = new QWidget();
+    rightWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     rightLayout = new QVBoxLayout(rightWidget);
     rightLayout->setContentsMargins(0, 0, 0, 0);
     rightLayout->setSpacing(0);
@@ -198,8 +199,6 @@ void MainWindow::displayMediaByCategory(const QString &category)
             addMediaCardToLayout(media);
         }
     }
-
-    rightLayout->addStretch();
 }
 
 void MainWindow::addMediaCardToLayout(Media* media)
@@ -370,7 +369,6 @@ void MainWindow::showCreateItemWidget()
     clearCurrentMedia();
     createItemWidget->show();
     rightLayout->addWidget(createItemWidget);
-    rightLayout->addStretch();
 }
 
 void MainWindow::onMediaItemCreated(Media* newItem)
@@ -387,4 +385,24 @@ void MainWindow::onSearchTextChanged(const QString& text)
 {
     Q_UNUSED(text);  // Silenzia l'avviso del parametro non utilizzato
     displayMediaByCategory(currentCategory);
+}
+
+void MainWindow::onUploadRequested() {
+    QString filePath = QFileDialog::getOpenFileName(this, "Carica file JSON", "", "File JSON (*.json)");
+    if (!filePath.isEmpty()) {
+        std::vector<Media*> loadedMedia = dbManagerService.caricaDaJson(filePath);
+        container->clear();
+        for (auto media : loadedMedia) {
+            container->aggiungi(media);
+        }
+        aggiornaVista();
+    }
+}
+
+void MainWindow::onSaveRequested() {
+    QString filePath = QFileDialog::getSaveFileName(this, "Salva file JSON", "", "File JSON (*.json)");
+    if (!filePath.isEmpty()) {
+        std::vector<Media*> mediaList = container->getTutti();
+        dbManagerService.salvaSuJson(filePath, mediaList);
+    }
 }

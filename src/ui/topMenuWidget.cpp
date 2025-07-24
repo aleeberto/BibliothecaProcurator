@@ -44,8 +44,9 @@ TopMenuWidget::TopMenuWidget(QWidget* parent) : QWidget(parent) {
     btnCreate->setStyleSheet(buttonStyle);
 
     // Connessioni dei pulsanti
-    connect(btnUpload, &QPushButton::clicked, this, &TopMenuWidget::uploadRequested);
-    connect(btnSave, &QPushButton::clicked, this, &TopMenuWidget::saveRequested);
+    connect(topMenuWidget, &TopMenuWidget::uploadRequested, this, &MainWindow::onUploadRequested);
+    connect(topMenuWidget, &TopMenuWidget::saveRequested, this, &MainWindow::onSaveRequested);
+
     connect(btnCreate, &QPushButton::clicked, this, &TopMenuWidget::createRequested);
 
     layout->addWidget(btnUpload);

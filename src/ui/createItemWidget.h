@@ -1,48 +1,36 @@
-#ifndef CREATEITEMWIDGET_H
-#define CREATEITEMWIDGET_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include <QWidget>
-#include <QComboBox>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QLineEdit>
-#include <QStackedWidget>
-#include <QPushButton>
-#include <QMessageBox>
-#include <QFileDialog>
+#include <QMainWindow>
+#include "../services/dbmanagerservice.h"
+#include "../widgets/topMenuWidget.h"
+#include "../widgets/createItemWidget.h"
 #include "../core/media.h"
-#include "../core/series.h"
-#include "../core/anime.h"
-#include "../core/serieTv.h"
-#include "../core/film.h"
-#include "../core/libro.h"
-#include "../core/manga.h"
-#include "../core/cd.h"
-#include "../core/cartaceo.h"
 
-class CreateItemWidget : public QWidget
-{
+#include <vector>
+
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit CreateItemWidget(QWidget *parent = nullptr);
-    Media* createMediaItem() const;
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
-signals:
-    void itemCreated(Media* newItem);
-
-public slots:
-    void onItemTypeChanged(int index);
-    void onBrowseImageClicked();
-    void onCreateButtonClicked();
+private slots:
+    void onUploadRequested();
+    void onSaveRequested();
+    void onCreateRequested();
+    void onItemCreated(Media* newItem);
 
 private:
-    void addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder);
+    DbManagerService dbService;
+    std::vector<Media*> mediaItems;
 
-    QComboBox *itemTypeCombo;
-    QStackedWidget *stackedFields;
-    QPushButton *createButton;
-    QPushButton *browseImageButton;
+    TopMenuWidget* topMenu;
+    CreateItemWidget* createWidget;
+
+    void setupUI();
+    void clearItems();
 };
 
-#endif // CREATEITEMWIDGET_H
+#endif // MAINWINDOW_H
