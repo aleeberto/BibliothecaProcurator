@@ -1,5 +1,6 @@
 #!/bin/bash
-mkdir -p build
+qmake -project -after "QT += gui widgets"
+mkdir -p build 
 cd build
 make clean
 qmake ../BibliothecaProcurator.pro

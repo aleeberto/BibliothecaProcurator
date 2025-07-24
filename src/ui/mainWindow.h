@@ -2,16 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QStackedWidget>
-#include <QVBoxLayout>
 #include <QVector>
-#include <QMessageBox>
-#include "../core/media.h"
-#include "../services/dbManagerService.h"
-#include "../ui/topMenuWidget.h"
-#include "../ui/createItemWidget.h"
+#include <QMap>
+#include <QPushButton>
+#include <QLineEdit>
+#include "widget/topMenuWidget.h"
+#include "widget/createItemWidget.h"
+#include "../services/jsonService.h"
+#include "../logic/media.h"
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
@@ -19,26 +20,32 @@ public:
     ~MainWindow();
 
 private slots:
-    void onUploadRequested();
-    void onSaveRequested();
-    void onCreateRequested();
-    void onItemCreated(Media* item);
-    void onMediaSelected(Media* item);
+    void showCreateItemWidget();
+    void onMediaItemCreated(Media* newItem);
+    void handleUploadRequest();
+    void saveCurrentData();
+    void onSearchTextChanged(const QString& text);
 
 private:
-    void setupUi();
-    void showHomePage();
-    void showCreatePage();
-    void showDetailPage(Media* item);
+    void loadMediaData(const QString &filePath);
+    void clearCurrentMedia();
+    void displayMediaByCategory(const QString &category);
+    void setupCategoryButtons();
+    void setupSearchBar();
+    void addMediaCardToLayout(Media* media);
+    QPixmap loadMediaImage(const std::string& imagePath);
 
-    DbManagerService dbManager;
-    QVector<Media*> mediaItems;
-
-    QWidget *central;
-    QVBoxLayout *mainLayout;
-    TopMenuWidget *topMenu;
-    QStackedWidget *stackedPages;
-    CreateItemWidget *createWidget;
+    TopMenuWidget* topMenu;
+    CreateItemWidget* createItemWidget;
+    QWidget *rightWidget;
+    QVBoxLayout *rightLayout;
+    QVBoxLayout *leftLayout;
+    JsonService *jsonService;
+    QVector<Media*> mediaCollection;
+    QMap<QString, QPushButton*> categoryButtons;
+    QString currentJsonPath = "biblioteca.json";
+    QString currentCategory = "Tutti";
+    QLineEdit *searchBar;
 };
 
 #endif // MAINWINDOW_H

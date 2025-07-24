@@ -53,21 +53,21 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../src/main.cpp \
-		../src/core/anime.cpp \
-		../src/core/cartaceo.cpp \
-		../src/core/cd.cpp \
-		../src/core/film.cpp \
-		../src/core/libro.cpp \
-		../src/core/manga.cpp \
-		../src/core/media.cpp \
-		../src/core/series.cpp \
-		../src/core/serieTv.cpp \
+		../src/logic/anime.cpp \
+		../src/logic/cartaceo.cpp \
+		../src/logic/cd.cpp \
+		../src/logic/film.cpp \
+		../src/logic/libro.cpp \
+		../src/logic/manga.cpp \
+		../src/logic/media.cpp \
+		../src/logic/series.cpp \
+		../src/logic/serieTv.cpp \
 		../src/services/jsonService.cpp \
-		../src/ui/createItemWidget.cpp \
 		../src/ui/mainWindow.cpp \
-		../src/ui/topMenuWidget.cpp moc_jsonService.cpp \
-		moc_createItemWidget.cpp \
+		../src/ui/widget/createItemWidget.cpp \
+		../src/ui/widget/topMenuWidget.cpp moc_jsonService.cpp \
 		moc_mainWindow.cpp \
+		moc_createItemWidget.cpp \
 		moc_topMenuWidget.cpp
 OBJECTS       = main.o \
 		anime.o \
@@ -80,12 +80,12 @@ OBJECTS       = main.o \
 		series.o \
 		serieTv.o \
 		jsonService.o \
-		createItemWidget.o \
 		mainWindow.o \
+		createItemWidget.o \
 		topMenuWidget.o \
 		moc_jsonService.o \
-		moc_createItemWidget.o \
 		moc_mainWindow.o \
+		moc_createItemWidget.o \
 		moc_topMenuWidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -169,32 +169,32 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		../../BibliothecaProcurator.pro ../src/core/anime.h \
-		../src/core/cartaceo.h \
-		../src/core/CD.h \
-		../src/core/film.h \
-		../src/core/libro.h \
-		../src/core/manga.h \
-		../src/core/media.h \
-		../src/core/series.h \
-		../src/core/serieTv.h \
+		../../BibliothecaProcurator.pro ../src/logic/anime.h \
+		../src/logic/cartaceo.h \
+		../src/logic/cd.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/manga.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/serieTv.h \
 		../src/services/jsonService.h \
-		../src/ui/createItemWidget.h \
 		../src/ui/mainWindow.h \
-		../src/ui/topMenuWidget.h ../src/main.cpp \
-		../src/core/anime.cpp \
-		../src/core/cartaceo.cpp \
-		../src/core/cd.cpp \
-		../src/core/film.cpp \
-		../src/core/libro.cpp \
-		../src/core/manga.cpp \
-		../src/core/media.cpp \
-		../src/core/series.cpp \
-		../src/core/serieTv.cpp \
+		../src/ui/widget/createItemWidget.h \
+		../src/ui/widget/topMenuWidget.h ../src/main.cpp \
+		../src/logic/anime.cpp \
+		../src/logic/cartaceo.cpp \
+		../src/logic/cd.cpp \
+		../src/logic/film.cpp \
+		../src/logic/libro.cpp \
+		../src/logic/manga.cpp \
+		../src/logic/media.cpp \
+		../src/logic/series.cpp \
+		../src/logic/serieTv.cpp \
 		../src/services/jsonService.cpp \
-		../src/ui/createItemWidget.cpp \
 		../src/ui/mainWindow.cpp \
-		../src/ui/topMenuWidget.cpp
+		../src/ui/widget/createItemWidget.cpp \
+		../src/ui/widget/topMenuWidget.cpp
 QMAKE_TARGET  = BibliothecaProcurator
 DESTDIR       = 
 TARGET        = BibliothecaProcurator
@@ -388,8 +388,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/core/anime.h ../src/core/cartaceo.h ../src/core/CD.h ../src/core/film.h ../src/core/libro.h ../src/core/manga.h ../src/core/media.h ../src/core/series.h ../src/core/serieTv.h ../src/services/jsonService.h ../src/ui/createItemWidget.h ../src/ui/mainWindow.h ../src/ui/topMenuWidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/main.cpp ../src/core/anime.cpp ../src/core/cartaceo.cpp ../src/core/cd.cpp ../src/core/film.cpp ../src/core/libro.cpp ../src/core/manga.cpp ../src/core/media.cpp ../src/core/series.cpp ../src/core/serieTv.cpp ../src/services/jsonService.cpp ../src/ui/createItemWidget.cpp ../src/ui/mainWindow.cpp ../src/ui/topMenuWidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/logic/anime.h ../src/logic/cartaceo.h ../src/logic/cd.h ../src/logic/film.h ../src/logic/libro.h ../src/logic/manga.h ../src/logic/media.h ../src/logic/series.h ../src/logic/serieTv.h ../src/services/jsonService.h ../src/ui/mainWindow.h ../src/ui/widget/createItemWidget.h ../src/ui/widget/topMenuWidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/main.cpp ../src/logic/anime.cpp ../src/logic/cartaceo.cpp ../src/logic/cd.cpp ../src/logic/film.cpp ../src/logic/libro.cpp ../src/logic/manga.cpp ../src/logic/media.cpp ../src/logic/series.cpp ../src/logic/serieTv.cpp ../src/services/jsonService.cpp ../src/ui/mainWindow.cpp ../src/ui/widget/createItemWidget.cpp ../src/ui/widget/topMenuWidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -421,36 +421,50 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_jsonService.cpp moc_createItemWidget.cpp moc_mainWindow.cpp moc_topMenuWidget.cpp
+compiler_moc_header_make_all: moc_jsonService.cpp moc_mainWindow.cpp moc_createItemWidget.cpp moc_topMenuWidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_jsonService.cpp moc_createItemWidget.cpp moc_mainWindow.cpp moc_topMenuWidget.cpp
+	-$(DEL_FILE) moc_jsonService.cpp moc_mainWindow.cpp moc_createItemWidget.cpp moc_topMenuWidget.cpp
 moc_jsonService.cpp: ../src/services/jsonService.h \
-		../src/core/media.h \
+		../src/logic/media.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/services/jsonService.h -o moc_jsonService.cpp
 
-moc_createItemWidget.cpp: ../src/ui/createItemWidget.h \
-		../src/services/dbmanagerservice.h \
-		../src/core/media.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/createItemWidget.h -o moc_createItemWidget.cpp
-
 moc_mainWindow.cpp: ../src/ui/mainWindow.h \
-		../src/core/media.h \
-		../src/services/dbManagerService.h \
-		../src/ui/topMenuWidget.h \
-		../src/ui/createItemWidget.h \
-		../src/services/dbmanagerservice.h \
+		../src/ui/widget/topMenuWidget.h \
+		../src/ui/widget/createItemWidget.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/serieTv.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h \
+		../src/services/jsonService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/mainWindow.h -o moc_mainWindow.cpp
 
-moc_topMenuWidget.cpp: ../src/ui/topMenuWidget.h \
+moc_createItemWidget.cpp: ../src/ui/widget/createItemWidget.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/serieTv.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/topMenuWidget.h -o moc_topMenuWidget.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/widget/createItemWidget.h -o moc_createItemWidget.cpp
+
+moc_topMenuWidget.cpp: ../src/ui/widget/topMenuWidget.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /BibliothecaProcurator/BibliothecaProcurator/build/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/BibliothecaProcurator/BibliothecaProcurator -I/BibliothecaProcurator/BibliothecaProcurator -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/ui/widget/topMenuWidget.h -o moc_topMenuWidget.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -469,95 +483,109 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 ####### Compile
 
 main.o: ../src/main.cpp ../src/ui/mainWindow.h \
-		../src/core/media.h \
-		../src/services/dbManagerService.h \
-		../src/ui/topMenuWidget.h \
-		../src/ui/createItemWidget.h \
-		../src/services/dbmanagerservice.h
+		../src/ui/widget/topMenuWidget.h \
+		../src/ui/widget/createItemWidget.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/serieTv.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h \
+		../src/services/jsonService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../src/main.cpp
 
-anime.o: ../src/core/anime.cpp ../src/core/anime.h \
-		../src/core/series.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o anime.o ../src/core/anime.cpp
+anime.o: ../src/logic/anime.cpp ../src/logic/anime.h \
+		../src/logic/series.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o anime.o ../src/logic/anime.cpp
 
-cartaceo.o: ../src/core/cartaceo.cpp ../src/core/cartaceo.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cartaceo.o ../src/core/cartaceo.cpp
+cartaceo.o: ../src/logic/cartaceo.cpp ../src/logic/cartaceo.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cartaceo.o ../src/logic/cartaceo.cpp
 
-cd.o: ../src/core/cd.cpp ../src/core/cd.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cd.o ../src/core/cd.cpp
+cd.o: ../src/logic/cd.cpp ../src/logic/cd.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o cd.o ../src/logic/cd.cpp
 
-film.o: ../src/core/film.cpp ../src/core/film.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o film.o ../src/core/film.cpp
+film.o: ../src/logic/film.cpp ../src/logic/film.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o film.o ../src/logic/film.cpp
 
-libro.o: ../src/core/libro.cpp ../src/core/libro.h \
-		../src/core/cartaceo.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o libro.o ../src/core/libro.cpp
+libro.o: ../src/logic/libro.cpp ../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o libro.o ../src/logic/libro.cpp
 
-manga.o: ../src/core/manga.cpp ../src/core/manga.h \
-		../src/core/cartaceo.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o manga.o ../src/core/manga.cpp
+manga.o: ../src/logic/manga.cpp ../src/logic/manga.h \
+		../src/logic/cartaceo.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o manga.o ../src/logic/manga.cpp
 
-media.o: ../src/core/media.cpp ../src/core/media.h \
-		../src/core/film.h \
-		../src/core/manga.h \
-		../src/core/cartaceo.h \
-		../src/core/anime.h \
-		../src/core/series.h \
-		../src/core/serietv.h \
-		../src/core/libro.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o media.o ../src/core/media.cpp
+media.o: ../src/logic/media.cpp ../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o media.o ../src/logic/media.cpp
 
-series.o: ../src/core/series.cpp ../src/core/series.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o series.o ../src/core/series.cpp
+series.o: ../src/logic/series.cpp ../src/logic/series.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o series.o ../src/logic/series.cpp
 
-serieTv.o: ../src/core/serieTv.cpp ../src/core/serietv.h \
-		../src/core/series.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serieTv.o ../src/core/serieTv.cpp
+serieTv.o: ../src/logic/serieTv.cpp ../src/logic/serieTv.h \
+		../src/logic/series.h \
+		../src/logic/media.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o serieTv.o ../src/logic/serieTv.cpp
 
 jsonService.o: ../src/services/jsonService.cpp ../src/services/jsonService.h \
-		../src/core/media.h \
-		../src/core/film.h \
-		../src/core/serieTv.h \
-		../src/core/series.h \
-		../src/core/anime.h \
-		../src/core/libro.h \
-		../src/core/cartaceo.h \
-		../src/core/manga.h \
-		../src/core/cd.h
+		../src/logic/media.h \
+		../src/logic/film.h \
+		../src/logic/serieTv.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o jsonService.o ../src/services/jsonService.cpp
 
-createItemWidget.o: ../src/ui/createItemWidget.cpp ../src/ui/createItemWidget.h \
-		../src/services/dbmanagerservice.h \
-		../src/core/media.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o createItemWidget.o ../src/ui/createItemWidget.cpp
-
 mainWindow.o: ../src/ui/mainWindow.cpp ../src/ui/mainWindow.h \
-		../src/core/media.h \
-		../src/services/dbManagerService.h \
-		../src/ui/topMenuWidget.h \
-		../src/ui/createItemWidget.h \
-		../src/services/dbmanagerservice.h
+		../src/ui/widget/topMenuWidget.h \
+		../src/ui/widget/createItemWidget.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/serieTv.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h \
+		../src/services/jsonService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainWindow.o ../src/ui/mainWindow.cpp
 
-topMenuWidget.o: ../src/ui/topMenuWidget.cpp ../src/ui/topMenuWidget.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o topMenuWidget.o ../src/ui/topMenuWidget.cpp
+createItemWidget.o: ../src/ui/widget/createItemWidget.cpp ../src/ui/widget/createItemWidget.h \
+		../src/logic/media.h \
+		../src/logic/series.h \
+		../src/logic/anime.h \
+		../src/logic/serieTv.h \
+		../src/logic/film.h \
+		../src/logic/libro.h \
+		../src/logic/cartaceo.h \
+		../src/logic/manga.h \
+		../src/logic/cd.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o createItemWidget.o ../src/ui/widget/createItemWidget.cpp
+
+topMenuWidget.o: ../src/ui/widget/topMenuWidget.cpp ../src/ui/widget/topMenuWidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o topMenuWidget.o ../src/ui/widget/topMenuWidget.cpp
 
 moc_jsonService.o: moc_jsonService.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_jsonService.o moc_jsonService.cpp
 
-moc_createItemWidget.o: moc_createItemWidget.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_createItemWidget.o moc_createItemWidget.cpp
-
 moc_mainWindow.o: moc_mainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainWindow.o moc_mainWindow.cpp
+
+moc_createItemWidget.o: moc_createItemWidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_createItemWidget.o moc_createItemWidget.cpp
 
 moc_topMenuWidget.o: moc_topMenuWidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_topMenuWidget.o moc_topMenuWidget.cpp
