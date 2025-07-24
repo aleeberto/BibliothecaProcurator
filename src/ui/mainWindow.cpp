@@ -9,9 +9,6 @@
 #include <QDir>
 #include <QPixmap>
 #include <QPainter>
-#include <QDir>
-#include <QFileInfo>
-#include <QPainter>
 #include <QCoreApplication> 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -66,19 +63,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     leftLayout->addStretch();
 
     // Right widget - Main content
-    rightWidget = new QWidget();
-    rightLayout = new QVBoxLayout(rightWidget);
-    rightLayout->setContentsMargins(0, 0, 0, 0);
-    rightLayout->setSpacing(0);
-
-    // Create item widget (hidden by default)
-    createItemWidget = new CreateItemWidget(this);
-    createItemWidget->hide();
-
+    rightLayoutWidget = new RightLayoutWidget(this);
+    
     // Scroll area for right content
     QScrollArea *rightScrollArea = new QScrollArea(this);
     rightScrollArea->setWidgetResizable(true);
-    rightScrollArea->setWidget(rightWidget);
+    rightScrollArea->setWidget(rightLayoutWidget);
     rightScrollArea->setFrameShape(QFrame::NoFrame);
     rightScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -91,6 +81,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     // Set minimum window size
     setMinimumSize(900, 600);
+
+    // Create item widget (hidden by default)
+    createItemWidget = new CreateItemWidget(this);
+    createItemWidget->hide();
 
     // Load initial data
     if (QFile::exists(currentJsonPath)) {
@@ -134,7 +128,7 @@ void MainWindow::setupCategoryButtons()
 
         connect(btn, &QPushButton::clicked, this, [this, category]() {
             currentCategory = category;
-            displayMediaByCategory(category);
+            rightLayoutWidget->displayMediaByCategory(category, searchBar->text());
 
             // Update button states
             for (QPushButton *button : categoryButtons) {
@@ -169,9 +163,8 @@ void MainWindow::setupSearchBar()
 void MainWindow::loadMediaData(const QString &filePath)
 {
     if (jsonService->loadFromFile(filePath)) {
-        clearCurrentMedia();
-        qDeleteAll(mediaCollection);
         mediaCollection.clear();
+        qDeleteAll(mediaCollection);
 
         QVector<Media*> loadedMedia = jsonService->getAllMedia();
         for (Media* media : loadedMedia) {
@@ -179,156 +172,9 @@ void MainWindow::loadMediaData(const QString &filePath)
         }
 
         currentJsonPath = filePath;
-        displayMediaByCategory(currentCategory);
-    }
-}
-
-void MainWindow::displayMediaByCategory(const QString &category)
-{
-    clearCurrentMedia();
-
-    QString searchText = searchBar->text().toLower();
-    
-    for (Media* media : mediaCollection) {
-        QString mediaType = jsonService->getMediaTypeName(media);
-        QString mediaTitle = QString::fromStdString(media->getTitolo()).toLower();
-
-        if ((category == "Tutti" || mediaType == category) &&
-            (searchText.isEmpty() || mediaTitle.contains(searchText))) {
-            addMediaCardToLayout(media);
-        }
-    }
-
-    rightLayout->addStretch();
-}
-
-void MainWindow::addMediaCardToLayout(Media* media)
-{
-    QWidget *mediaCard = new QWidget();
-    mediaCard->setStyleSheet(
-        "QWidget {"
-        "  border: 1px solid #ddd;"
-        "  border-radius: 5px;"
-        "  margin: 5px;"
-        "  background: white;"
-        "}"
-    );
-
-    QHBoxLayout *cardLayout = new QHBoxLayout(mediaCard);
-    cardLayout->setContentsMargins(10, 10, 10, 10);
-
-    // Image
-    QLabel *imgLabel = new QLabel();
-    imgLabel->setPixmap(loadMediaImage(media->getImmagine()));
-    imgLabel->setAlignment(Qt::AlignTop);
-
-    // Details
-    QWidget *detailsWidget = new QWidget();
-    QVBoxLayout *detailsLayout = new QVBoxLayout(detailsWidget);
-    detailsLayout->setAlignment(Qt::AlignTop);
-
-    QLabel *titleLabel = new QLabel("<b>" + QString::fromStdString(media->getTitolo()) + "</b>");
-    titleLabel->setStyleSheet("font-size: 14px;");
-
-    QLabel *yearLabel = new QLabel("Anno: " + QString::number(media->getAnno()));
-    QLabel *typeLabel = new QLabel("Tipo: " + jsonService->getMediaTypeName(media));
-
-    detailsLayout->addWidget(titleLabel);
-    detailsLayout->addWidget(yearLabel);
-    detailsLayout->addWidget(typeLabel);
-
-    // Add type-specific fields
-    if (auto film = dynamic_cast<Film*>(media)) {
-        detailsLayout->addWidget(new QLabel("Regista: " + QString::fromStdString(film->getRegista())));
-        detailsLayout->addWidget(new QLabel("Protagonista: " + QString::fromStdString(film->getAttoreProtagonista())));
-        detailsLayout->addWidget(new QLabel("Durata: " + QString::number(film->getDurata()) + " min"));
-    }
-    else if (auto serie = dynamic_cast<SerieTv*>(media)) {
-        detailsLayout->addWidget(new QLabel("Stagioni: " + QString::number(serie->getNumStagioni())));
-        detailsLayout->addWidget(new QLabel("Episodi: " + QString::number(serie->getNumEpisodi())));
-        detailsLayout->addWidget(new QLabel("Durata episodio: " + QString::number(serie->getDurataMediaEp()) + " min"));
-        detailsLayout->addWidget(new QLabel("Ideatore: " + QString::fromStdString(serie->getIdeatore())));
-        detailsLayout->addWidget(new QLabel("Casa produttrice: " + QString::fromStdString(serie->getCasaProduttrice())));
-        detailsLayout->addWidget(new QLabel("Stato: " + QString(serie->getInCorso() ? "In corso" : "Conclusa")));
-    }
-    else if (auto anime = dynamic_cast<Anime*>(media)) {
-        detailsLayout->addWidget(new QLabel("Stagioni: " + QString::number(anime->getNumStagioni())));
-        detailsLayout->addWidget(new QLabel("Episodi: " + QString::number(anime->getNumEpisodi())));
-        detailsLayout->addWidget(new QLabel("Durata episodio: " + QString::number(anime->getDurataMediaEp()) + " min"));
-        detailsLayout->addWidget(new QLabel("Disegnatore: " + QString::fromStdString(anime->getDisegnatore())));
-        detailsLayout->addWidget(new QLabel("Studio: " + QString::fromStdString(anime->getStudioAnimazione())));
-        detailsLayout->addWidget(new QLabel("Stato: " + QString(anime->getInCorso() ? "In corso" : "Conclusa")));
-    }
-    else if (auto libro = dynamic_cast<Libro*>(media)) {
-        detailsLayout->addWidget(new QLabel("Scrittore: " + QString::fromStdString(libro->getScrittore())));
-        detailsLayout->addWidget(new QLabel("Anno di Stampa: " + QString::number(libro->getAnnoStampa())));
-        detailsLayout->addWidget(new QLabel("Casa Editrice: " + QString::fromStdString(libro->getCasaEditrice())));
-    }
-    else if (auto manga = dynamic_cast<Manga*>(media)) {
-        detailsLayout->addWidget(new QLabel("Scrittore: " + QString::fromStdString(manga->getScrittore())));
-        detailsLayout->addWidget(new QLabel("Illustratore: " + QString::fromStdString(manga->getIllustratore())));
-        detailsLayout->addWidget(new QLabel("Volumi: " + QString::number(manga->getNumLibri())));
-        detailsLayout->addWidget(new QLabel("Stato: " + QString(manga->getConcluso() ? "Concluso" : "In corso")));
-    }
-    else if (auto cd = dynamic_cast<Cd*>(media)) {
-        detailsLayout->addWidget(new QLabel("Artista: " + QString::fromStdString(cd->getArtista())));
-        detailsLayout->addWidget(new QLabel("Tracce: " + QString::number(cd->getNumTracce())));
-        detailsLayout->addWidget(new QLabel("Durata media: " + QString::number(cd->getDurataMedTracce()) + " sec"));
-    }
-
-    detailsLayout->addStretch();
-
-    cardLayout->addWidget(imgLabel);
-    cardLayout->addWidget(detailsWidget, 1);
-
-    rightLayout->addWidget(mediaCard);
-}
-
-QPixmap MainWindow::loadMediaImage(const std::string& imagePath)
-{
-    QString imageQPath = QString::fromStdString(imagePath);
-    QPixmap pixmap;
-    
-    // 1. Converti il percorso in assoluto se è relativo
-    QFileInfo fileInfo(imageQPath);
-    if (fileInfo.isRelative()) {
-        // Costruisci il percorso assoluto basato sulla directory dell'applicazione
-        QString appDir = QCoreApplication::applicationDirPath();
-        imageQPath = QDir::cleanPath(appDir + QDir::separator() + imageQPath);
-    }
-    
-    // 2. Prova a caricare l'immagine
-    if (!pixmap.load(imageQPath)) {
-        // Creazione di un'immagine placeholder con informazioni di debug
-        pixmap = QPixmap(120, 180);
-        pixmap.fill(QColor(240, 240, 240));
-        
-        QPainter painter(&pixmap);
-        painter.setPen(Qt::darkGray);
-        painter.setFont(QFont("Arial", 8));
-        
-        QString debugInfo = QString("Impossibile caricare:\n%1\nPercorso risolto:\n%2")
-                           .arg(QString::fromStdString(imagePath))
-                           .arg(imageQPath);
-        
-        painter.drawText(pixmap.rect().adjusted(5, 5, -5, -5), 
-                        Qt::AlignCenter | Qt::TextWordWrap, 
-                        debugInfo);
-        
-        qDebug() << "Errore caricamento immagine:" << debugInfo;
-    }
-    
-    return pixmap.scaled(120, 180, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-}
-
-void MainWindow::clearCurrentMedia()
-{
-    QLayoutItem* item;
-    while ((item = rightLayout->takeAt(0)) != nullptr) {
-        if (item->widget()) {
-            item->widget()->deleteLater();
-        }
-        delete item;
+        rightLayoutWidget->setMediaCollection(mediaCollection);
+        rightLayoutWidget->setJsonService(jsonService);
+        rightLayoutWidget->displayMediaByCategory(currentCategory);
     }
 }
 
@@ -367,10 +213,7 @@ void MainWindow::saveCurrentData()
 
 void MainWindow::showCreateItemWidget()
 {
-    clearCurrentMedia();
-    createItemWidget->show();
-    rightLayout->addWidget(createItemWidget);
-    rightLayout->addStretch();
+    rightLayoutWidget->showCreateItemWidget(createItemWidget);
 }
 
 void MainWindow::onMediaItemCreated(Media* newItem)
@@ -378,13 +221,11 @@ void MainWindow::onMediaItemCreated(Media* newItem)
     if (newItem) {
         mediaCollection.append(newItem);
         jsonService->addMedia(newItem);
-        displayMediaByCategory(currentCategory);
-        createItemWidget->hide();
+        rightLayoutWidget->displayMediaByCategory(currentCategory);
     }
 }
 
 void MainWindow::onSearchTextChanged(const QString& text)
 {
-    Q_UNUSED(text);  // Silenzia l'avviso del parametro non utilizzato
-    displayMediaByCategory(currentCategory);
+    rightLayoutWidget->displayMediaByCategory(currentCategory, text);
 }

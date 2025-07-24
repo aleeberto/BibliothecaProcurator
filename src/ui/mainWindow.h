@@ -8,6 +8,7 @@
 #include <QLineEdit>
 #include "widget/topMenuWidget.h"
 #include "widget/createItemWidget.h"
+#include "widget/rightLayoutWidget.h"
 #include "../services/jsonService.h"
 #include "../logic/media.h"
 
@@ -28,17 +29,10 @@ private slots:
 
 private:
     void loadMediaData(const QString &filePath);
-    void clearCurrentMedia();
-    void displayMediaByCategory(const QString &category);
-    void setupCategoryButtons();
-    void setupSearchBar();
-    void addMediaCardToLayout(Media* media);
-    QPixmap loadMediaImage(const std::string& imagePath);
 
     TopMenuWidget* topMenu;
     CreateItemWidget* createItemWidget;
-    QWidget *rightWidget;
-    QVBoxLayout *rightLayout;
+    RightLayoutWidget* rightLayoutWidget;
     QVBoxLayout *leftLayout;
     JsonService *jsonService;
     QVector<Media*> mediaCollection;
