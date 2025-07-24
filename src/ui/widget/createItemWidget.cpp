@@ -95,14 +95,47 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 
 void CreateItemWidget::addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder)
 {
-    QLabel* label = new QLabel(labelText);
-    QLineEdit* input = new QLineEdit();
-    input->setPlaceholderText(placeholder);
-    input->setMinimumHeight(30);
-    input->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    if (labelText == "Immagine:") {
+        // Special case for image path field with browse button
+        QLabel* label = new QLabel(labelText);
+        QHBoxLayout* hLayout = new QHBoxLayout();
+        QLineEdit* input = new QLineEdit();
+        input->setPlaceholderText(placeholder);
+        input->setMinimumHeight(30);
+        input->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    layout->addWidget(label);
-    layout->addWidget(input);
+        QPushButton* browseButton = new QPushButton("Browse");
+        browseButton->setFixedHeight(30);
+        browseButton->setFixedWidth(70);
+
+        hLayout->addWidget(input);
+        hLayout->addWidget(browseButton);
+
+        layout->addWidget(label);
+        layout->addLayout(hLayout);
+
+        // Connect browse button to open file dialog
+        connect(browseButton, &QPushButton::clicked, this, [input, this]() {
+            QString filePath = QFileDialog::getOpenFileName(
+                this,
+                tr("Seleziona immagine"),
+                QDir::homePath(),
+                tr("Immagini (*.png *.jpg *.jpeg *.bmp *.gif)")
+            );
+            if (!filePath.isEmpty()) {
+                input->setText(filePath);
+            }
+        });
+    } else {
+        QLabel* label = new QLabel(labelText);
+        QLineEdit* input = new QLineEdit();
+        input->setPlaceholderText(placeholder);
+        input->setMinimumHeight(30);
+        input->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+        layout->addWidget(label);
+        layout->addWidget(input);
+    }
 }
 
 Media* CreateItemWidget::createMediaItem() const
