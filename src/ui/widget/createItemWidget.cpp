@@ -14,13 +14,15 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     QWidget *scrollContent = new QWidget();
     QVBoxLayout *contentLayout = new QVBoxLayout(scrollContent);
     contentLayout->setContentsMargins(15, 15, 15, 15);
-    contentLayout->setSpacing(15);
+    contentLayout->setSpacing(10);
 
     // Configure scroll area
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(scrollContent);
     scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     // Form content
@@ -46,7 +48,7 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
         QWidget* page = new QWidget(scrollContent);
         QVBoxLayout* pageLayout = new QVBoxLayout(page);
         pageLayout->setContentsMargins(5, 5, 5, 5);
-        pageLayout->setSpacing(8);
+        pageLayout->setSpacing(5);
 
         // Common fields for all media types
         addFieldWithPlaceholder(pageLayout, "Titolo:", "Inserisci il titolo");
@@ -58,7 +60,6 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
             addFieldWithPlaceholder(pageLayout, field + ":", "Inserisci " + field);
         }
 
-        pageLayout->addStretch();
         page->setLayout(pageLayout);
         stackedFields->addWidget(page);
         itemTypeCombo->addItem(type);
@@ -90,6 +91,7 @@ CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
     contentLayout->addWidget(itemTypeCombo);
     contentLayout->addWidget(stackedFields);
     contentLayout->addWidget(createButton);
+    contentLayout->addStretch(); // Add stretch at the end to push content up
 
     mainLayout->addWidget(scrollArea);
     setLayout(mainLayout);
