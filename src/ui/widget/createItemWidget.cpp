@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QDir>
+#include <QTimer>
 
 CreateItemWidget::CreateItemWidget(QWidget *parent) : QWidget(parent)
 {
@@ -263,6 +264,9 @@ Media* CreateItemWidget::createMediaItem() const
 
 void CreateItemWidget::onCreateButtonClicked()
 {
+    // Prevent multiple rapid clicks
+    createButton->setEnabled(false);
+    
     Media* newItem = createMediaItem();
     if (newItem) {
         emit itemCreated(newItem);
@@ -274,6 +278,11 @@ void CreateItemWidget::onCreateButtonClicked()
             field->clear();
         }
     }
+    
+    // Re-enable button after a short delay to prevent rapid clicks
+    QTimer::singleShot(500, this, [this]() {
+        createButton->setEnabled(true);
+    });
 }
 
 void CreateItemWidget::onItemTypeChanged(int index)

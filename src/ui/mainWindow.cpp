@@ -221,6 +221,9 @@ void MainWindow::onMediaItemCreated(Media* newItem)
     if (newItem) {
         mediaCollection.append(newItem);
         jsonService->addMedia(newItem);
+        
+        // Update the rightLayoutWidget with the current collection
+        rightLayoutWidget->setMediaCollection(mediaCollection);
         rightLayoutWidget->displayMediaByCategory(currentCategory);
     }
 }
