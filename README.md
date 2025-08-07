@@ -2,8 +2,9 @@
 Project for the course "Programmazione ad Oggetti"
 
 
-###
+### Albero del Progetto
 
+```
 BibliothecaProcurator/
 │
 ├── resources/
@@ -23,12 +24,14 @@ BibliothecaProcurator/
 ├── BibliothecaProcurator.pro
 ├── build.sh
 └── README.md        
+```
 
-###
+### Albero delle Classi
 
+```
 Media
 │
-├── Series  
+├── Series
 │   ├── Anime
 │   └── Serie TV
 │
@@ -38,9 +41,4 @@ Media
 │   └── Manga
 │
 └── Cd
-
-### SET_1_ICONE
-- https://icon-icons.com/it/icona/aggiungere-inserire/61521
-- https://icon-icons.com/it/icona/cestino-eliminare-rimuovere/61518
-- https://icon-icons.com/it/icona/caricare-freccia-box/61513
-- https://icon-icons.com/it/icona/scaricare-cassetta-postale-download/61498
+```
