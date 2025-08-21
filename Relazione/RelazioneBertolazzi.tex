@@ -1,17 +1,44 @@
 \documentclass[a4paper,12pt]{article}
 
+% ---------------------------
+% Pacchetti di base
+% ---------------------------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[italian]{babel}
 \usepackage{geometry}
+\geometry{margin=2cm}
+
+% ---------------------------
+% Grafica e matematica
+% ---------------------------
 \usepackage{graphicx}
 \usepackage{amsmath, amssymb}
-\usepackage{hyperref}
-\usepackage{fancyhdr}
-\usepackage{lipsum}
-\usepackage[labelformat=empty]{caption}
-\usepackage{listings}
+\usepackage{float} % Per il posizionamento preciso delle figure
 
+% ---------------------------
+% Riferimenti e link
+% ---------------------------
+\usepackage{hyperref}
+
+% ---------------------------
+% Header e footer
+% ---------------------------
+\usepackage{fancyhdr}
+\fancyhf{}
+\rhead{Relazione Alessandro Bertolazzi}
+\cfoot{\thepage}
+\pagestyle{fancy}
+\setlength{\headheight}{14.5pt}
+
+% ---------------------------
+% Caption senza "Figura X:"
+% ---------------------------
+\usepackage[labelformat=empty]{caption}
+
+% ---------------------------
+% Listings e codice JSON
+% ---------------------------
 \usepackage{bera}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -22,7 +49,7 @@
 \colorlet{numb}{magenta!60!black}
 
 \lstdefinelanguage{json}{
-    basicstyle=\normalfont\ttfamily,
+    basicstyle=\ttfamily\small,
     numbers=left,
     numberstyle=\scriptsize,
     stepnumber=1,
@@ -48,85 +75,144 @@
       {\}}{{{\color{delim}{\}}}}}{1}
       {[}{{{\color{delim}{[}}}}{1}
       {]}{{{\color{delim}{]}}}}{1}
-      {"}{{{\color{red}"}}}{1}
+      {"}{{{\color{red}"}}}{1},
 }
 
-\geometry{margin=1.5cm}
+% ---------------------------
+% Tabelle avanzate
+% ---------------------------
+\usepackage{tabularx}
+\renewcommand{\arraystretch}{1.3} % Più spazio tra righe
 
-\pagestyle{fancy}
-\fancyhf{}
-\rhead{Relazione Alessandro Bertolazzi}
-\cfoot{\thepage}
-\setlength{\headheight}{14.5pt}
-\addtolength{\topmargin}{-2.5pt}
-
+% ---------------------------
+% Titolo
+% ---------------------------
 \title{Relazione progetto Programmazione ad Oggetti}
-\author{Alessandro Bertolazzi}
-
+\author{Alessandro Bertolazzi \\ 1227274}
 \date{}
 
 \begin{document}
 
+\fontsize{10pt}{12pt}\selectfont
 \maketitle
 
 \begin{abstract}
-\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca virtuale.
+\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un'applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca virtuale.
 \end{abstract}
 
 \section{Introduzione}
-
-Il progetto proponeva di creare una applicazione che permettesse di gestire una biblioteca. L' applicazione che ho deciso di creare non vuole essere per la gestione di una biblioteca pubblica, bensi di una biblioteca privata in modo da poter organizzare e catalogare libri, film, cd, e simili per un privato con collezzioni ampie. Ho deciso di prendere questa strada perché oltre a poter aver un utilitá per me in prima persona, ho visto che non si trovano prodotti simili online o comunque se si trova qualcosa si tratta di applicazioni datate, a pagamento o non piú mantenute.
+Il progetto proponeva di creare un'applicazione che permettesse di gestire una biblioteca. L'applicazione che ho deciso di creare non vuole essere per la gestione di una biblioteca pubblica, bensì di una biblioteca privata in modo da poter organizzare e catalogare libri, film, CD e simili per un privato con collezioni ampie. Ho deciso di prendere questa strada perché, oltre a poter avere un'utilità per me in prima persona, ho visto che non si trovano prodotti simili online o comunque, se si trova qualcosa, si tratta di applicazioni datate, a pagamento o non più mantenute.
 
 \section{Struttura del Progetto}
-
 \subsection{Logic}
+Nella cartella \texttt{Logic} si trova tutta la parte logica dell'applicazione. Le specifiche del progetto richiedevano almeno 3 classi concrete per i progetti svolti singolarmente, ma per completezza ho deciso di farne 6: \texttt{Anime}, \texttt{SerieTv}, \texttt{Film}, \texttt{Cd}, \texttt{Manga} e \texttt{Libro}. Come classi astratte invece ho utilizzato \texttt{Media} come superclasse e ulteriori due classi \texttt{Series} e \texttt{Cartaceo}.
 
-Nella cartella Logic si trova tutta la parte logica del applicazione. Le specifiche del progetto richiedevano almeno 3 classi concrete per i progetti svolti singolarmente, ma per completezza ho deciso di farne 6: Anime, Serie Tv, Film, Cd, Manga e Libro. Come classi Astratte invece ho utilizzato Media come classe base, Series e Cartaceo.
-
-\begin{figure}[h!]
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=0.6\textwidth]{img/DisegnoSchemaLogico.png}
     \caption{Struttura logica dell'applicazione}
-    \label{fig:logic-structure}
 \end{figure}
 
 \subsection{UI}
-
-per quanto riguarda l'interfaccia grafica, mainWindow gestisce la finestra principale. Ho deciso poi di alleggerire relativamente il file creando file Widget che si occupano di generare parti singole dell interfaccia. topMenuWidget va a generare la parte di pulsanti che si occupano della creazione, caricamento e chiusura della biblioteca e un bottone per la creazione di nuovi Media. rightLayoutWidget si occupa di gestire la parte destra del layout in cui vengono proposti tutti gli elementi media contenuti nella libreria.createItemWidget invece é la finestra che viene utilizzata a seguito del click del tasto "crea media" per creare un nuovo media, questa finestra va a sostituire quello che viene inizialmente generato da rightLayoutWidget per poi una volta confermata la creazione si nasconde.
+Per quanto riguarda l'interfaccia grafica, \texttt{mainWindow} gestisce la finestra principale. Ho deciso poi di alleggerire relativamente il file creando file \texttt{Widget} che si occupano di generare parti singole dell'interfaccia. \texttt{topMenuWidget} va a generare la parte di pulsanti che si occupa della creazione, caricamento e chiusura della biblioteca e un bottone per la creazione di nuovi \texttt{Media}. \texttt{rightLayoutWidget} si occupa di gestire la parte destra del layout in cui vengono proposti tutti gli elementi media contenuti nella libreria. \texttt{createItemWidget} invece è la finestra che viene utilizzata a seguito del click del tasto "crea media" per creare un nuovo media. Questa finestra va a sostituire quello che viene inizialmente generato da \texttt{rightLayoutWidget} per poi, una volta confermata la creazione, nascondersi.
 
 \subsection{Service}
-
-Nella parte Service ho cercato di inserire tutta la parte di codice non legata alla generazione della Ui e alla logica dell applicazione. Il file jsonService si occupa della gestione del file Json per la persistenza dei dati, gestendo il caricamento e il salvataggio del file, conversione e aggiunta di un nuovo media e la rimozione. styleUtils puó essere visto come un file CSS nella programmazione web, qui ho cercato di raggruppare tutta la parte che si occupa dello stile dell applicazioni (A volte ho deciso di lasciare la gestione dello stile direttamente nei file Widget). uiService si occupa invece dell "popolamento" dell interfaccia grafica. mediaType é un file che ho utilizzato per ragruppare i dynamic_cast presenti nel codice, permettendo una gestione piú semplice e pulita dei vari tipi di media. mediaService é la parte che si occupa della gestione generale di tutti i servizi, visto un po' come file "mainService"
+Nella parte \texttt{Service} ho cercato di inserire tutta la parte di codice non legata alla generazione della UI e alla logica dell'applicazione. Il file \texttt{jsonService} si occupa della gestione del file JSON per la persistenza dei dati, gestendo il caricamento e il salvataggio del file, conversione e aggiunta di un nuovo media e la rimozione. \texttt{styleUtils} può essere visto come un file CSS nella programmazione web: qui ho raggruppato tutta la parte che si occupa dello stile dell'applicazione (a volte ho lasciato la gestione dello stile direttamente nei file Widget). \texttt{uiService} si occupa invece del "popolamento" dell'interfaccia grafica. \texttt{mediaType} è un file che ho utilizzato per raggruppare i \texttt{dynamic\_cast} presenti nel codice, permettendo una gestione più semplice e pulita dei vari tipi di media. \texttt{mediaService} è la parte che si occupa della gestione generale di tutti i servizi, visto un po' come file "mainService".
 
 \section{Persistenza dei Dati}
-
-Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, scelta dettata in primis dalla semplicità di utilizzo e dalla facile manutenibilità. Il codice JSON é cosi strutturato:
+Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, scelta dettata in primis dalla semplicità di utilizzo e dalla facile manutenibilità. Le modifiche che vengono fatte nell'interfaccia grafica, a seguito della conferma tramite pop-up, vengono scritte subito nel file JSON. La maggior parte del codice di gestione del file JSON è contenuta nel file \texttt{jsonService}. Il codice JSON è così strutturato:
 
 \begin{lstlisting}[language=json]
-    "media": [
-        {
-            "anno": 1986,
-            "disegnatore": "Akira Toriyama",
-            "durataMediaEp": 24,
-            "immagine": "../resources/img/dragonball.jpg",
-            "inCorso": false,
-            "numEpisodi": 153,
-            "numStagioni": 5,
-            "studioAnimazione": "Toei Animation",
-            "titolo": "Dragon Ball",
-            "type": "Anime"
-        }
-    ]
+"media": [
+    {
+        "anno": 1986,
+        "disegnatore": "Akira Toriyama",
+        "durataMediaEp": 24,
+        "immagine": "../resources/img/dragonball.jpg",
+        "inCorso": false,
+        "numEpisodi": 153,
+        "numStagioni": 5,
+        "studioAnimazione": "Toei Animation",
+        "titolo": "Dragon Ball",
+        "type": "Anime"
+    }
+]
 \end{lstlisting}
 
-\section{Ricerca}
+\newpage
 
-\section{Incapsulamento e information hiding}
+\section{Interfaccia Grafica}
+\begin{figure}[ht!]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+        \includegraphics[width=\linewidth]{img/TopButton.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.55\textwidth}
+        \small
+        Bottoni del \texttt{topMenuWidget}. In ordine:
+        \begin{itemize}
+            \item Carica una biblioteca esistente
+            \item Crea e apre una nuova biblioteca
+            \item Chiudi la biblioteca corrente
+            \item Crea un nuovo elemento media
+        \end{itemize}
+        Il secondo bottone, nel caso non sia stata caricata una biblioteca e siano già stati creati dei media, salva automaticamente i media in cache nella nuova biblioteca.
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+        \includegraphics[width=\linewidth]{img/LeftMenu.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.55\textwidth}
+        \small
+        Nel \texttt{leftMenu} viene creata la barra di ricerca che, ad ogni cambiamento (ogni volta che viene digitato un carattere), cerca l'elemento nella biblioteca. La ricerca è case insensitive e funziona anche con ricerca parziale. Sotto sono presenti i media categorizzati per tipologia.
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \begin{minipage}{0.4\textwidth}
+        \includegraphics[width=\linewidth]{img/MediaItem.png}
+    \end{minipage}\hfill
+    \begin{minipage}{0.55\textwidth}
+        \small
+        Un esempio di elemento media: a sinistra viene caricata l'immagine, mentre a destra vengono visualizzati tutti i dettagli. All'estrema destra ci sono due bottoni: il primo permette di modificare il media, il secondo di cancellarlo dalla libreria. Entrambe le funzioni di modifica ed eliminazione, appena confermate, vanno a modificare direttamente il file JSON.  
+        Alcuni miglioramenti che non ho implementato: una gestione migliore dello scaling dell'immagine e un'eventuale ricerca automatica online, per alleggerire l'utente dal dover scaricare e gestire manualmente le immagini.
+    \end{minipage}
+\end{figure}
+
+\clearpage
 
 \section{Polimorfismo}
+(da completare)
 
 \section{Rendiconto delle tempistiche}
+Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quanto è stato sviluppato trovando il tempo tra lo studio e il lavoro. Escludendo lo studio personale necessario per comprendere il funzionamento di Qt e delle librerie utilizzate, e lo studio più approfondito del linguaggio C++, posso stimare circa 65 ore di sviluppo.
 
-Quantificare le ore di lavoro richieste dal progetto risulta complicato in quanto é stato sviluppato trovando il tempo tra lo studio e il lavoro. Approssimativamente escludendo lo studio personale necessario per comprendere il funzionamento di Qt e delle librerie utilizzate, lo studio leggermente piú approfondito del linguaggio C++ posso stimare 50 ore di sviluppo. Nelle 50 ore viene contato il tempo necessario per il debug, che da solo ha necessitato di una decina di ore. Mi ha aiutato a diminuire le tempistiche invece l' esperienza maturata in questi anni di lavoro come sviluppatore.
+\begin{table}[h!]
+\centering
+\begin{tabularx}{\textwidth}{p{4cm} p{2cm} p{2cm} X}
+\hline
+\textbf{Jobs} & \textbf{Scheduled hours} & \textbf{Actual hours} & \textbf{Notes} \\
+\hline
+Modellazione diagramma UML          & 1  & 2  & Il tempo é stato sforato perché nel corso dello sviluppo del progetto sono state necessarie delle modifiche \\
+Bozza interfaccia Grafica           & 1  & 1  &   \\
+Implementazione modello Logico      & 5  & 5  & Implementazione veloce grazie al diagramma UML già deciso \\
+Implementazione Interfaccia grafica & 15 & 20 &   \\
+Implementazione parte Service       & 15 & 15 &   \\
+Affinamento Progetto                & 5  & 10 & Questo Job sarebbe da includere nel implementazione della parte di Service, ma visto che é stato lavorato anche su altro ho deciso di considerarlo a parte \\
+Debug                               & 5  & 7  & Quantificare il tempo di debug risulta difficile visto che il progetto é stato sviluppato per parti e dopo ogni modifica spesso risultava necessario sistemare qualcosa. Alcuni bug invece sono stati trovati con un uso piú attento dell applicazione \\
+Modifiche Finali                    & 5  & 5  &   \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section{TODO}
+\begin{itemize}
+    \item descrivere l’utilizzo non banale del polimorfismo, identificando quali metodi sono polimorfi e il loro valore aggiunto all’interno del progetto
+    \item completare la rendicontazione delle ore previste ed effettivamente svolte
+\end{itemize}
 
 \end{document}
