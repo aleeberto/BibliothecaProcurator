@@ -46,9 +46,13 @@ private:
     MediaService *mediaService;
     UIService *uiService;
     QMap<QString, QPushButton*> categoryButtons;
+
+    // Default JSON, valutare se tenerlo o meno
     QString currentJsonPath = "../resources/data/data.json";
+    //Default categoria 
     QString currentCategory = "Tutti";
     QLineEdit *searchBar;
 };
 
 #endif
+ 

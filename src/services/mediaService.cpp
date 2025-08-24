@@ -13,11 +13,103 @@
 
 MediaService::MediaService(QObject *parent) : QObject(parent), jsonService(nullptr)
 {
+    initializeMediaFactories();
 }
 
 MediaService::~MediaService()
 {
     clearMediaCollection();
+}
+
+void MediaService::initializeMediaFactories() {
+    // Factory per la creazione dei media con parametri da form
+    mediaCreationFactories["Serie Tv"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 9) return nullptr;
+        
+        bool inCorso = parseBoolFromString(fields[6]->text(), "In Corso");
+        return new SerieTv(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toInt(),        // numEpisodi
+            fields[4]->text().toInt(),        // numStagioni
+            fields[5]->text().toInt(),        // durataMediaEp
+            inCorso,                          // inCorso
+            fields[7]->text().toStdString(),  // ideatore
+            fields[8]->text().toStdString()   // casaProduttrice
+        );
+    };
+    
+    mediaCreationFactories["Anime"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 9) return nullptr;
+        
+        bool inCorso = parseBoolFromString(fields[6]->text(), "In Corso");
+        return new Anime(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toInt(),        // numEpisodi
+            fields[4]->text().toInt(),        // numStagioni
+            fields[5]->text().toInt(),        // durataMediaEp
+            inCorso,                          // inCorso
+            fields[7]->text().toStdString(),  // disegnatore
+            fields[8]->text().toStdString()   // studioAnimazione
+        );
+    };
+    
+    mediaCreationFactories["Film"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 6) return nullptr;
+        
+        return new Film(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toStdString(),  // regista
+            fields[4]->text().toStdString(),  // attoreProtagonista
+            fields[5]->text().toInt()         // durata
+        );
+    };
+    
+    mediaCreationFactories["Libro"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 6) return nullptr;
+        
+        return new Libro(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toStdString(),  // scrittore
+            fields[4]->text().toInt(),        // annoStampa
+            fields[5]->text().toStdString()   // casaEditrice
+        );
+    };
+    
+    mediaCreationFactories["Manga"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 7) return nullptr;
+        
+        bool concluso = parseBoolFromString(fields[6]->text(), "Concluso");
+        return new Manga(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toStdString(),  // scrittore
+            fields[4]->text().toStdString(),  // illustratore
+            fields[5]->text().toInt(),        // numLibri
+            concluso                          // concluso
+        );
+    };
+    
+    mediaCreationFactories["Cd"] = [this](const QList<QLineEdit*>& fields) -> Media* {
+        if (fields.size() < 6) return nullptr;
+        
+        return new Cd(
+            fields[0]->text().toStdString(),  // titolo
+            fields[2]->text().toInt(),        // anno
+            fields[1]->text().toStdString(),  // immagine
+            fields[3]->text().toStdString(),  // artista
+            fields[4]->text().toInt(),        // numTracce
+            fields[5]->text().toInt()         // durataMedTracce
+        );
+    };
 }
 
 void MediaService::setMediaCollection(const QVector<Media*>& collection)
@@ -132,7 +224,7 @@ QVector<Media*> MediaService::filterByCategory(const QString& category) const
     
     QVector<Media*> filtered;
     for (Media* media : mediaCollection) {
-        QString mediaType = MediaTypeUtils::getMediaTypeName(media);
+        QString mediaType = QString::fromStdString(media->getMediaType());
         if (mediaType == category) {
             filtered.append(media);
         }
@@ -208,6 +300,7 @@ bool MediaService::parseBoolFromString(const QString& text, const QString& field
 
 Media* MediaService::createMediaFromFields(const QString& type, const QList<QLineEdit*>& fields, QWidget* parent)
 {
+    // Validazione campi obbligatori
     for (QLineEdit* field : fields) {
         if (field->text().isEmpty()) {
             QMessageBox::warning(parent,
@@ -219,79 +312,16 @@ Media* MediaService::createMediaFromFields(const QString& type, const QList<QLin
     }
 
     try {
-        if (type == "Serie Tv") {
-            bool inCorso = parseBoolFromString(fields[6]->text(), "In Corso");
-
-            return new SerieTv(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toInt(),
-                fields[4]->text().toInt(),
-                fields[5]->text().toInt(),
-                inCorso,
-                fields[7]->text().toStdString(),
-                fields[8]->text().toStdString()
-            );
+        // Usa la factory per creare il media
+        auto factoryIt = mediaCreationFactories.find(type.toStdString());
+        if (factoryIt != mediaCreationFactories.end()) {
+            return factoryIt->second(fields);
         }
-        else if (type == "Anime") {
-            bool inCorso = parseBoolFromString(fields[6]->text(), "In Corso");
-
-            return new Anime(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toInt(),
-                fields[4]->text().toInt(),
-                fields[5]->text().toInt(),
-                inCorso,
-                fields[7]->text().toStdString(),
-                fields[8]->text().toStdString()
-            );
-        }
-        else if (type == "Film") {
-            return new Film(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toStdString(),
-                fields[5]->text().toInt()
-            );
-        }
-        else if (type == "Libro") {
-            return new Libro(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toInt(),
-                fields[5]->text().toStdString()
-            );
-        }
-        else if (type == "Manga") {
-            bool concluso = parseBoolFromString(fields[6]->text(), "Concluso");
-
-            return new Manga(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toStdString(),
-                fields[5]->text().toInt(),
-                concluso
-            );
-        }
-        else if (type == "Cd") {
-            return new Cd(
-                fields[0]->text().toStdString(),
-                fields[2]->text().toInt(),
-                fields[1]->text().toStdString(),
-                fields[3]->text().toStdString(),
-                fields[4]->text().toInt(),
-                fields[5]->text().toInt()
-            );
-        }
+        
+        QMessageBox::critical(parent,
+            "Errore",
+            QString("Tipo di media non supportato: %1").arg(type));
+        return nullptr;
     }
     catch (const std::exception& e) {
         QMessageBox::critical(parent,
@@ -305,6 +335,4 @@ Media* MediaService::createMediaFromFields(const QString& type, const QList<QLin
             "Si è verificato un errore sconosciuto durante la creazione del media");
         return nullptr;
     }
-
-    return nullptr;
 }

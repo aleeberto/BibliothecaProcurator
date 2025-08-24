@@ -13,13 +13,20 @@ class Cd : public Media{
         Cd(string titolo, int anno, string immagine, string artista, int numTracce, int durataMedTracce);
         virtual ~Cd() = default;
 
+        // Getters/Setters specifici Cd
         string getArtista() const;
         int getNumTracce() const;
         int getDurataMedTracce() const;
-        
         void setArtista(const string &updArtista);
         void setNumTracce(const int &updNumTracce);
         void setDurataMedTracce(const int &updDurataMedTracce);
+        
+        // Implementazione metodi virtuali
+        string getMediaType() const override;
+        std::vector<std::pair<string, string>> getSpecificDetails() const override;
+        QJsonObject toJsonSpecific() const override;
+        void fromJsonSpecific(const QJsonObject& json) override;
+        Media* clone() const override;
 };
 
 #endif

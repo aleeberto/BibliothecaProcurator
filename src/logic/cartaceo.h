@@ -11,9 +11,15 @@ class Cartaceo : public Media{
         Cartaceo(string titolo, int anno, string immagine, string scrittore);
         virtual ~Cartaceo() = default;
 
+        // Getters/Setters comuni ai cartacei
         string getScrittore() const;
-
         void setScrittore(const string &updScrittore);
+        
+    protected:
+        // Metodi helper per le classi derivate
+        std::vector<std::pair<string, string>> getCartaceoBaseDetails() const;
+        QJsonObject getCartaceoBaseJson() const;
+        void setCartaceoBaseFromJson(const QJsonObject& json);
 };
 
 #endif

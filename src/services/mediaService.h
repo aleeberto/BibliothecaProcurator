@@ -8,8 +8,9 @@
 #include <QLineEdit>
 #include <QWidget>
 #include <QMessageBox>
+#include <functional>
+#include <unordered_map>
 #include "../logic/media.h"
-#include "mediaTypeUtils.h"
 #include "jsonService.h"
 
 class MediaService : public QObject
@@ -54,9 +55,12 @@ private:
     QVector<Media*> mediaCollection;
     JsonService* jsonService;
     QString currentFilePath;
+    
+    // Factory map per la creazione polimorfica dei media da form
+    std::unordered_map<std::string, std::function<Media*(const QList<QLineEdit*>&)>> mediaCreationFactories;
 
     void updateJsonService();
-
+    void initializeMediaFactories();
     bool parseBoolFromString(const QString& text, const QString& fieldName) const;
 };
 

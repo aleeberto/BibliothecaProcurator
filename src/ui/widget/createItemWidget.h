@@ -11,15 +11,10 @@
 #include <QScrollArea>
 #include <QResizeEvent>
 #include <QMessageBox>
+#include <vector>
+#include <utility>
 #include "../../logic/media.h"
-#include "../../logic/anime.h"
-#include "../../logic/serieTv.h"
-#include "../../logic/film.h"
-#include "../../logic/libro.h"
-#include "../../logic/manga.h"
-#include "../../logic/cd.h"
 #include "../../services/mediaService.h"
-#include "../../services/mediaTypeUtils.h"
 
 class CreateItemWidget : public QWidget
 {
@@ -54,6 +49,8 @@ private:
     void addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder);
     void updateScrollBarVisibility();
     void populateFieldsFromMedia(Media* media);
+    void populateSpecificFieldsFromDetails(QList<QLineEdit*>& fields, 
+        const std::vector<std::pair<std::string, std::string>>& details, const QString& mediaType);
 
     QComboBox *itemTypeCombo;
     QStackedWidget *stackedFields;

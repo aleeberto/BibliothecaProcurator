@@ -5,12 +5,6 @@
 #include <QPainter>
 #include <QFont>
 #include <QDebug>
-#include "../logic/film.h"
-#include "../logic/serieTv.h"
-#include "../logic/anime.h"
-#include "../logic/libro.h"
-#include "../logic/manga.h"
-#include "../logic/cd.h"
 
 UIService::UIService(QObject *parent) : QObject(parent)
 {
@@ -31,7 +25,7 @@ QString UIService::formatMediaYear(Media* media) const
 QString UIService::formatMediaType(Media* media) const
 {
     if (!media) return "";
-    return "Tipo: " + MediaTypeUtils::getMediaTypeName(media);
+    return "Tipo: " + QString::fromStdString(media->getMediaType());
 }
 
 QStringList UIService::formatMediaDetails(Media* media) const
@@ -39,42 +33,9 @@ QStringList UIService::formatMediaDetails(Media* media) const
     QStringList details;
     if (!media) return details;
     
-    if (auto film = dynamic_cast<Film*>(media)) {
-        details << "Regista: " + QString::fromStdString(film->getRegista());
-        details << "Protagonista: " + QString::fromStdString(film->getAttoreProtagonista());
-        details << "Durata: " + formatDuration(film->getDurata());
-    }
-    else if (auto serie = dynamic_cast<SerieTv*>(media)) {
-        details << "Stagioni: " + formatNumber(serie->getNumStagioni());
-        details << "Episodi: " + formatNumber(serie->getNumEpisodi());
-        details << "Durata episodio: " + formatDuration(serie->getDurataMediaEp());
-        details << "Ideatore: " + QString::fromStdString(serie->getIdeatore());
-        details << "Casa produttrice: " + QString::fromStdString(serie->getCasaProduttrice());
-        details << "Stato: " + formatBooleanValue(serie->getInCorso(), "In corso", "Conclusa");
-    }
-    else if (auto anime = dynamic_cast<Anime*>(media)) {
-        details << "Stagioni: " + formatNumber(anime->getNumStagioni());
-        details << "Episodi: " + formatNumber(anime->getNumEpisodi());
-        details << "Durata episodio: " + formatDuration(anime->getDurataMediaEp());
-        details << "Disegnatore: " + QString::fromStdString(anime->getDisegnatore());
-        details << "Studio: " + QString::fromStdString(anime->getStudioAnimazione());
-        details << "Stato: " + formatBooleanValue(anime->getInCorso(), "In corso", "Conclusa");
-    }
-    else if (auto libro = dynamic_cast<Libro*>(media)) {
-        details << "Scrittore: " + QString::fromStdString(libro->getScrittore());
-        details << "Anno di Stampa: " + formatNumber(libro->getAnnoStampa());
-        details << "Casa Editrice: " + QString::fromStdString(libro->getCasaEditrice());
-    }
-    else if (auto manga = dynamic_cast<Manga*>(media)) {
-        details << "Scrittore: " + QString::fromStdString(manga->getScrittore());
-        details << "Illustratore: " + QString::fromStdString(manga->getIllustratore());
-        details << "Volumi: " + formatNumber(manga->getNumLibri());
-        details << "Stato: " + formatBooleanValue(manga->getConcluso(), "Concluso", "In corso");
-    }
-    else if (auto cd = dynamic_cast<Cd*>(media)) {
-        details << "Artista: " + QString::fromStdString(cd->getArtista());
-        details << "Tracce: " + formatNumber(cd->getNumTracce());
-        details << "Durata media: " + formatDuration(cd->getDurataMedTracce(), "sec");
+    auto specificDetails = media->getSpecificDetails();
+    for (const auto& detail : specificDetails) {
+        details << QString::fromStdString(detail.first) + ": " + QString::fromStdString(detail.second);
     }
     
     return details;
@@ -115,7 +76,6 @@ QPixmap UIService::createImagePlaceholder(const std::string& originalPath) const
     
     return pixmap;
 }
-
 
 QString UIService::formatBooleanValue(bool value, const QString& trueText, const QString& falseText) const
 {

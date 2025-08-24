@@ -1,7 +1,4 @@
 #include "jsonService.h"
-#include <QFile>
-#include <QJsonDocument>
-#include <QDebug>
 #include "../logic/film.h"
 #include "../logic/serieTv.h"
 #include "../logic/anime.h"
@@ -9,7 +6,72 @@
 #include "../logic/manga.h"
 #include "../logic/cd.h"
 
-JsonService::JsonService(QObject *parent) : QObject(parent) {}
+JsonService::JsonService(QObject *parent) : QObject(parent) {
+    initializeFactories();
+}
+
+void JsonService::initializeFactories() {
+    // Registrazione delle factory per ogni tipo di media
+    mediaFactories["Film"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto film = std::make_unique<Film>(titolo, anno, immagine, "", "", 0);
+        film->fromJsonSpecific(json);
+        return film;
+    };
+    
+    mediaFactories["Serie Tv"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto serie = std::make_unique<SerieTv>(titolo, anno, immagine, 0, 0, 0, false, "", "");
+        serie->fromJsonSpecific(json);
+        return serie;
+    };
+    
+    mediaFactories["Anime"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto anime = std::make_unique<Anime>(titolo, anno, immagine, 0, 0, 0, false, "", "");
+        anime->fromJsonSpecific(json);
+        return anime;
+    };
+    
+    mediaFactories["Libro"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto libro = std::make_unique<Libro>(titolo, anno, immagine, "", 0, "");
+        libro->fromJsonSpecific(json);
+        return libro;
+    };
+    
+    mediaFactories["Manga"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto manga = std::make_unique<Manga>(titolo, anno, immagine, "", "", 0, false);
+        manga->fromJsonSpecific(json);
+        return manga;
+    };
+    
+    mediaFactories["Cd"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto cd = std::make_unique<Cd>(titolo, anno, immagine, "", 0, 0);
+        cd->fromJsonSpecific(json);
+        return cd;
+    };
+}
 
 bool JsonService::loadFromFile(const QString &filePath) {
     QFile file(filePath);
@@ -52,9 +114,9 @@ QVector<Media*> JsonService::getAllMedia() const {
     QVector<Media*> result;
     
     for (const QJsonValue &value : mediaArray) {
-        Media *media = jsonToMedia(value.toObject());
+        auto media = createMediaFromJson(value.toObject());
         if (media) {
-            result.append(media);
+            result.append(media.release());
         }
     }
     
@@ -81,7 +143,8 @@ Media* JsonService::findMedia(const QString &title) const {
     for (const QJsonValue &value : mediaArray) {
         QJsonObject obj = value.toObject();
         if (obj["titolo"].toString().compare(title, Qt::CaseInsensitive) == 0) {
-            return jsonToMedia(obj);
+            auto media = createMediaFromJson(obj);
+            return media ? media.release() : nullptr;
         }
     }
     return nullptr;
@@ -91,125 +154,33 @@ void JsonService::clearAll() {
     mediaArray = QJsonArray();
 }
 
-
-Media* JsonService::jsonToMedia(const QJsonObject &jsonObj) const {
-    std::string titolo = jsonObj["titolo"].toString().toStdString();
-    int anno = jsonObj["anno"].toInt();
-    std::string immagine = jsonObj["immagine"].toString().toStdString();
+std::unique_ptr<Media> JsonService::createMediaFromJson(const QJsonObject &jsonObj) const {
     QString type = jsonObj["type"].toString();
+    std::string typeStr = type.toStdString();
     
-    if (type == "Film") {
-        return new Film(
-            titolo, anno, immagine,
-            jsonObj["regista"].toString().toStdString(),
-            jsonObj["attoreProtagonista"].toString().toStdString(),
-            jsonObj["durata"].toInt()
-        );
-    }
-    else if (type == "Serie Tv") {
-        return new SerieTv(
-            titolo, anno, immagine,
-            jsonObj["numEpisodi"].toInt(),
-            jsonObj["numStagioni"].toInt(),
-            jsonObj["durataMediaEp"].toInt(),
-            jsonObj["inCorso"].toBool(),
-            jsonObj["ideatore"].toString().toStdString(),
-            jsonObj["casaProduttrice"].toString().toStdString()
-        );
-    }
-    else if (type == "Anime") {
-        return new Anime(
-            titolo, anno, immagine,
-            jsonObj["numEpisodi"].toInt(),
-            jsonObj["numStagioni"].toInt(),
-            jsonObj["durataMediaEp"].toInt(),
-            jsonObj["inCorso"].toBool(),
-            jsonObj["disegnatore"].toString().toStdString(),
-            jsonObj["studioAnimazione"].toString().toStdString()
-        );
-    }
-    else if (type == "Libro") {
-        return new Libro(
-            titolo, anno, immagine,
-            jsonObj["scrittore"].toString().toStdString(),
-            jsonObj["annoStampa"].toInt(),
-            jsonObj["casaEditrice"].toString().toStdString()
-        );
-    }
-    else if (type == "Manga") {
-        return new Manga(
-            titolo, anno, immagine,
-            jsonObj["scrittore"].toString().toStdString(),
-            jsonObj["illustratore"].toString().toStdString(),
-            jsonObj["numLibri"].toInt(),
-            jsonObj["concluso"].toBool()
-        );
-    }
-    else if (type == "Cd") {
-        return new Cd(
-            titolo, anno, immagine,
-            jsonObj["artista"].toString().toStdString(),
-            jsonObj["numTracce"].toInt(),
-            jsonObj["durataMedTracce"].toInt()
-        );
+    auto factoryIt = mediaFactories.find(typeStr);
+    if (factoryIt != mediaFactories.end()) {
+        return factoryIt->second(jsonObj);
     }
     
+    qWarning() << "Tipo di media sconosciuto:" << type;
     return nullptr;
 }
 
 QJsonObject JsonService::mediaToJson(Media *media) const {
+    if (!media) return QJsonObject();
+    
     QJsonObject jsonObj;
     
-    if (dynamic_cast<Film*>(media)) jsonObj["type"] = "Film";
-    else if (dynamic_cast<SerieTv*>(media)) jsonObj["type"] = "Serie Tv";
-    else if (dynamic_cast<Anime*>(media)) jsonObj["type"] = "Anime";
-    else if (dynamic_cast<Libro*>(media)) jsonObj["type"] = "Libro";
-    else if (dynamic_cast<Manga*>(media)) jsonObj["type"] = "Manga";
-    else if (dynamic_cast<Cd*>(media)) jsonObj["type"] = "Cd";
-    else jsonObj["type"] = "Altro";
-    
+    jsonObj["type"] = QString::fromStdString(media->getMediaType());
     jsonObj["titolo"] = QString::fromStdString(media->getTitolo());
     jsonObj["anno"] = media->getAnno();
     jsonObj["immagine"] = QString::fromStdString(media->getImmagine());
     
-    if (auto film = dynamic_cast<Film*>(media)) {
-        jsonObj["regista"] = QString::fromStdString(film->getRegista());
-        jsonObj["attoreProtagonista"] = QString::fromStdString(film->getAttoreProtagonista());
-        jsonObj["durata"] = film->getDurata();
-    }
-    else if (auto serie = dynamic_cast<SerieTv*>(media)) {
-        jsonObj["numEpisodi"] = serie->getNumEpisodi();
-        jsonObj["numStagioni"] = serie->getNumStagioni();
-        jsonObj["durataMediaEp"] = serie->getDurataMediaEp();
-        jsonObj["inCorso"] = serie->getInCorso();
-        jsonObj["ideatore"] = QString::fromStdString(serie->getIdeatore());
-        jsonObj["casaProduttrice"] = QString::fromStdString(serie->getCasaProduttrice());
-    }
-    else if (auto anime = dynamic_cast<Anime*>(media)) {
-        jsonObj["numEpisodi"] = anime->getNumEpisodi();
-        jsonObj["numStagioni"] = anime->getNumStagioni();
-        jsonObj["durataMediaEp"] = anime->getDurataMediaEp();
-        jsonObj["inCorso"] = anime->getInCorso();
-        jsonObj["disegnatore"] = QString::fromStdString(anime->getDisegnatore());
-        jsonObj["studioAnimazione"] = QString::fromStdString(anime->getStudioAnimazione());
-    }
-    else if (auto libro = dynamic_cast<Libro*>(media)) {
-        jsonObj["scrittore"] = QString::fromStdString(libro->getScrittore());
-        jsonObj["annoStampa"] = libro->getAnnoStampa();
-        jsonObj["casaEditrice"] = QString::fromStdString(libro->getCasaEditrice());
-    }
-    else if (auto manga = dynamic_cast<Manga*>(media)) {
-        jsonObj["scrittore"] = QString::fromStdString(manga->getScrittore());
-        jsonObj["illustratore"] = QString::fromStdString(manga->getIllustratore());
-        jsonObj["numLibri"] = manga->getNumLibri();
-        jsonObj["concluso"] = manga->getConcluso();
-    }
-    else if (auto cd = dynamic_cast<Cd*>(media)) {
-        jsonObj["artista"] = QString::fromStdString(cd->getArtista());
-        jsonObj["numTracce"] = cd->getNumTracce();
-        jsonObj["durataMedTracce"] = cd->getDurataMedTracce();
+    QJsonObject specificData = media->toJsonSpecific();
+    for (auto it = specificData.begin(); it != specificData.end(); ++it) {
+        jsonObj[it.key()] = it.value();
     }
     
     return jsonObj;
-
 }

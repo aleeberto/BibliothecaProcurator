@@ -112,8 +112,6 @@ void CreateItemWidget::resizeEvent(QResizeEvent* event)
     updateScrollBarVisibility();
 }
 
-// Controlli della scrollbar(non visibile se il contenuto è minore della viewport)
-
 void CreateItemWidget::updateScrollBarVisibility()
 {
     if (!scrollArea || !scrollArea->widget()) {
@@ -129,8 +127,6 @@ void CreateItemWidget::updateScrollBarVisibility()
         scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
 }
-
-// Aggiunge un campo con etichetta e placeholder      
 
 void CreateItemWidget::addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder)
 {
@@ -152,7 +148,6 @@ void CreateItemWidget::addFieldWithPlaceholder(QVBoxLayout* layout, const QStrin
         layout->addWidget(label);
         layout->addLayout(hLayout);
 
-        // Tasto Browse per selezionare un file immagine, apre un file dialog
         connect(browseButton, &QPushButton::clicked, this, [input, this]() {
             QString filePath = QFileDialog::getOpenFileName(
                 this,
@@ -195,7 +190,6 @@ Media* CreateItemWidget::createMediaItem() const
 
 void CreateItemWidget::onCreateButtonClicked()
 {
-    // Troppi click consecutivi davano errore dunqeu controllati(Segmentation Fault)
     if (!createButton->isEnabled()) {
         return;
     }
@@ -205,15 +199,12 @@ void CreateItemWidget::onCreateButtonClicked()
     Media* newItem = createMediaItem();
     if (newItem) {
         if (editMode && editingMedia) {
-            // Modalità modifica
             emit itemUpdated(editingMedia, newItem);
             clearEditMode();
         } else {
-            // Modalità creazione
             emit itemCreated(newItem);
         }
 
-        // Pulizia dei campi dopo la creazione
         QWidget* currentPage = stackedFields->currentWidget();
         if (currentPage) {
             QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
@@ -225,7 +216,6 @@ void CreateItemWidget::onCreateButtonClicked()
         }
     }
     
-    // Riattivazione del bottone (correzzione Segmentation Fault)
     QTimer::singleShot(500, this, [this]() {
         if (createButton) {
             createButton->setEnabled(true);
@@ -246,11 +236,9 @@ void CreateItemWidget::setEditMode(Media* media)
     editingMedia = media;
     editMode = true;
     
-    // Cambia il testo del bottone
     createButton->setText("Aggiorna Media");
     createButton->setStyleSheet(StyleUtils::getWarningButtonStyle());
     
-    // Precompila i campi con i dati del media
     populateFieldsFromMedia(media);
 }
 
@@ -259,7 +247,6 @@ void CreateItemWidget::clearEditMode()
     editingMedia = nullptr;
     editMode = false;
     
-    // Ripristina il testo del bottone
     createButton->setText("Crea Media");
     createButton->setStyleSheet(StyleUtils::getPrimaryButtonStyle());
 }
@@ -269,68 +256,107 @@ bool CreateItemWidget::isInEditMode() const
     return editMode;
 }
 
-
 void CreateItemWidget::populateFieldsFromMedia(Media* media)
 {
     if (!media) return;
-    
-    // Determina il tipo di media e seleziona il combo box appropriato
-    QString mediaType = MediaTypeUtils::getMediaTypeName(media);
+
+    // Polimorfismo per definire il tipo di media
+    QString mediaType = QString::fromStdString(media->getMediaType());
     int typeIndex = itemTypeCombo->findText(mediaType);
     if (typeIndex != -1) {
         itemTypeCombo->setCurrentIndex(typeIndex);
         stackedFields->setCurrentIndex(typeIndex);
     }
     
-    // Ottieni i campi della pagina corrente
     QWidget* currentPage = stackedFields->currentWidget();
     if (!currentPage) return;
     
     QList<QLineEdit*> fields = currentPage->findChildren<QLineEdit*>();
     if (fields.isEmpty()) return;
     
-    // Campi comuni per tutti i media
+    // Campi comuni
     if (fields.size() > 0) fields[0]->setText(QString::fromStdString(media->getTitolo()));
     if (fields.size() > 1) fields[1]->setText(QString::fromStdString(media->getImmagine()));
     if (fields.size() > 2) fields[2]->setText(QString::number(media->getAnno()));
     
-    // Campi specifici per tipo di media
-    if (auto film = dynamic_cast<Film*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::fromStdString(film->getRegista()));
-        if (fields.size() > 4) fields[4]->setText(QString::fromStdString(film->getAttoreProtagonista()));
-        if (fields.size() > 5) fields[5]->setText(QString::number(film->getDurata()));
-    }
-    else if (auto serie = dynamic_cast<SerieTv*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::number(serie->getNumEpisodi()));
-        if (fields.size() > 4) fields[4]->setText(QString::number(serie->getNumStagioni()));
-        if (fields.size() > 5) fields[5]->setText(QString::number(serie->getDurataMediaEp()));
-        if (fields.size() > 6) fields[6]->setText(serie->getInCorso() ? "true" : "false");
-        if (fields.size() > 7) fields[7]->setText(QString::fromStdString(serie->getIdeatore()));
-        if (fields.size() > 8) fields[8]->setText(QString::fromStdString(serie->getCasaProduttrice()));
-    }
-    else if (auto anime = dynamic_cast<Anime*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::number(anime->getNumEpisodi()));
-        if (fields.size() > 4) fields[4]->setText(QString::number(anime->getNumStagioni()));
-        if (fields.size() > 5) fields[5]->setText(QString::number(anime->getDurataMediaEp()));
-        if (fields.size() > 6) fields[6]->setText(anime->getInCorso() ? "true" : "false");
-        if (fields.size() > 7) fields[7]->setText(QString::fromStdString(anime->getDisegnatore()));
-        if (fields.size() > 8) fields[8]->setText(QString::fromStdString(anime->getStudioAnimazione()));
-    }
-    else if (auto libro = dynamic_cast<Libro*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::fromStdString(libro->getScrittore()));
-        if (fields.size() > 4) fields[4]->setText(QString::number(libro->getAnnoStampa()));
-        if (fields.size() > 5) fields[5]->setText(QString::fromStdString(libro->getCasaEditrice()));
-    }
-    else if (auto manga = dynamic_cast<Manga*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::fromStdString(manga->getScrittore()));
-        if (fields.size() > 4) fields[4]->setText(QString::number(manga->getNumLibri()));
-        if (fields.size() > 5) fields[5]->setText(QString::fromStdString(manga->getIllustratore()));
-        if (fields.size() > 6) fields[6]->setText(manga->getConcluso() ? "true" : "false");
-    }
-    else if (auto cd = dynamic_cast<Cd*>(media)) {
-        if (fields.size() > 3) fields[3]->setText(QString::fromStdString(cd->getArtista()));
-        if (fields.size() > 4) fields[4]->setText(QString::number(cd->getNumTracce()));
-        if (fields.size() > 5) fields[5]->setText(QString::number(cd->getDurataMedTracce()));
+    // Polimorfismo per campi specifici
+    auto specificDetails = media->getSpecificDetails();
+    
+    populateSpecificFieldsFromDetails(fields, specificDetails, mediaType);
+}
+
+void CreateItemWidget::populateSpecificFieldsFromDetails(QList<QLineEdit*>& fields, 
+    const std::vector<std::pair<std::string, std::string>>& details, const QString& mediaType)
+{
+
+    if (mediaType == "Film" && fields.size() >= 6) {
+        for (const auto& detail : details) {
+            QString key = QString::fromStdString(detail.first);
+            QString value = QString::fromStdString(detail.second);
+            
+            if (key == "Regista" && fields.size() > 3) {
+                fields[3]->setText(value);
+            } else if (key == "Protagonista" && fields.size() > 4) {
+                fields[4]->setText(value);
+            } else if (key == "Durata" && fields.size() > 5) {
+                // Rimuove " min" dal valore se presente
+                QString duration = value;
+                duration.replace(" min", "");
+                fields[5]->setText(duration);
+            }
+        }
+    } else if ((mediaType == "Serie Tv" || mediaType == "Anime") && fields.size() >= 9) {
+        for (const auto& detail : details) {
+            QString key = QString::fromStdString(detail.first);
+            QString value = QString::fromStdString(detail.second);
+            
+            if (key == "Episodi" && fields.size() > 3) {
+                fields[3]->setText(value);
+            } else if (key == "Stagioni" && fields.size() > 4) {
+                fields[4]->setText(value);
+            } else if (key == "Durata episodio" && fields.size() > 5) {
+                QString duration = value;
+                duration.replace(" min", "");
+                fields[5]->setText(duration);
+            } else if (key == "Stato" && fields.size() > 6) {
+                fields[6]->setText(value == "In corso" ? "true" : "false");
+            } else if ((key == "Ideatore" || key == "Disegnatore") && fields.size() > 7) {
+                fields[7]->setText(value);
+            } else if ((key == "Casa produttrice" || key == "Studio") && fields.size() > 8) {
+                fields[8]->setText(value);
+            }
+        }
+    } else if ((mediaType == "Libro" || mediaType == "Manga") && fields.size() >= 6) {
+        for (const auto& detail : details) {
+            QString key = QString::fromStdString(detail.first);
+            QString value = QString::fromStdString(detail.second);
+
+            if (key == "Scrittore" && fields.size() > 3) {
+                fields[3]->setText(value);
+            } else if ((key == "Anno di Stampa" || key == "Volumi") && fields.size() > 4) {
+                fields[4]->setText(value);
+            } else if ((key == "Casa Editrice" || key == "Illustratore") && fields.size() > 5) {
+                fields[5]->setText(value);
+            } else if (key == "Stato" && fields.size() > 6) {
+                fields[6]->setText(value == "Concluso" ? "true" : "false");
+            }
+        }
+    } else if (mediaType == "Cd" && fields.size() >= 6) {
+        for (const auto& detail : details) {
+            QString key = QString::fromStdString(detail.first);
+            QString value = QString::fromStdString(detail.second);
+
+            if (key == "Artista" && fields.size() > 3) {
+                fields[3]->setText(value);
+            } else if (key == "Tracce" && fields.size() > 4) {
+                fields[4]->setText(value);
+            } else if (key == "Durata media" && fields.size() > 5) {
+                // Rimuove " sec" dal valore se presente
+                QString duration = value;
+                duration.replace(" sec", "");
+                fields[5]->setText(duration);
+            }
+        }
     }
 }
 
