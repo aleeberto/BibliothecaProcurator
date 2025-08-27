@@ -37,18 +37,50 @@
 \usepackage[labelformat=empty]{caption}
 
 % ---------------------------
-% Listings e codice JSON
+% Listings e codice JSON e C++
+% ---------------------------
+% ---------------------------
+% Listings e codice
 % ---------------------------
 \usepackage{bera}
 \usepackage{listings}
 \usepackage{xcolor}
 
-\colorlet{punct}{red!60!black}
+% Colori di base
 \definecolor{background}{HTML}{EEEEEE}
-\definecolor{delim}{RGB}{20,105,176}
-\colorlet{numb}{magenta!60!black}
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
 
-\lstdefinelanguage{json}{
+% Stile per C++
+\lstdefinestyle{cppstyle}{
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{background},
+    keywordstyle=\color{bluekeywords}\bfseries,
+    commentstyle=\color{greencomments},
+    stringstyle=\color{redstrings},
+    identifierstyle=\color{black},
+    literate=
+    {à}{{\`a}}1 {è}{{\`e}}1 {é}{{\'e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+}
+
+\lstdefinelanguage{cpp}{
+    style=cppstyle,
+    keywords={class, public, private, protected, virtual, override, const, auto, return, void, bool, int, double, float, char, string, vector, pair, include, using, namespace, std, constexpr, noexcept, true, false, nullptr},
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+}
+
+% Stile per JSON
+\lstdefinestyle{jsonstyle}{
     basicstyle=\ttfamily\small,
     numbers=left,
     numberstyle=\scriptsize,
@@ -59,23 +91,23 @@
     frame=lines,
     backgroundcolor=\color{background},
     literate=
-     *{0}{{{\color{numb}0}}}{1}
-      {1}{{{\color{numb}1}}}{1}
-      {2}{{{\color{numb}2}}}{1}
-      {3}{{{\color{numb}3}}}{1}
-      {4}{{{\color{numb}4}}}{1}
-      {5}{{{\color{numb}5}}}{1}
-      {6}{{{\color{numb}6}}}{1}
-      {7}{{{\color{numb}7}}}{1}
-      {8}{{{\color{numb}8}}}{1}
-      {9}{{{\color{numb}9}}}{1}
-      {:}{{{\color{punct}{:}}}}{1}
-      {,}{{{\color{punct}{,}}}}{1}
-      {\{}{{{\color{delim}{\{}}}}{1}
-      {\}}{{{\color{delim}{\}}}}}{1}
-      {[}{{{\color{delim}{[}}}}{1}
-      {]}{{{\color{delim}{]}}}}{1}
-      {"}{{{\color{red}"}}}{1},
+     *{0}{{{\color{magenta!60!black}0}}}{1}
+      {1}{{{\color{magenta!60!black}1}}}{1}
+      {2}{{{\color{magenta!60!black}2}}}{1}
+      {3}{{{\color{magenta!60!black}3}}}{1}
+      {4}{{{\color{magenta!60!black}4}}}{1}
+      {5}{{{\color{magenta!60!black}5}}}{1}
+      {6}{{{\color{magenta!60!black}6}}}{1}
+      {7}{{{\color{magenta!60!black}7}}}{1}
+      {8}{{{\color{magenta!60!black}8}}}{1}
+      {9}{{{\color{magenta!60!black}9}}}{1}
+      {:}{{{\color{red!60!black}{:}}}}{1}
+      {,}{{{\color{red!60!black}{,}}}}{1}
+      {\{}{{{\color{blue!60!black}{\{}}}}{1}
+      {\}}{{{\color{blue!60!black}{\}}}}}{1}
+      {[}{{{\color{blue!60!black}{[}}}}{1}
+      {]}{{{\color{blue!60!black}{]}}}}{1}
+      {"}{{{\color{red!60!black}"}}}{1},
 }
 
 % ---------------------------
@@ -120,9 +152,10 @@ Per quanto riguarda l'interfaccia grafica, \texttt{mainWindow} gestisce la fines
 Nella parte \texttt{Service} ho cercato di inserire tutta la parte di codice non legata alla generazione della UI e alla logica dell'applicazione. Il file \texttt{jsonService} si occupa della gestione del file JSON per la persistenza dei dati, gestendo il caricamento e il salvataggio del file, conversione e aggiunta di un nuovo media e la rimozione. \texttt{styleUtils} può essere visto come un file CSS nella programmazione web: qui ho raggruppato tutta la parte che si occupa dello stile dell'applicazione (a volte ho lasciato la gestione dello stile direttamente nei file Widget). \texttt{uiService} si occupa invece del "popolamento" dell'interfaccia grafica. \texttt{mediaType} è un file che ho utilizzato per raggruppare i \texttt{dynamic\_cast} presenti nel codice, permettendo una gestione più semplice e pulita dei vari tipi di media. \texttt{mediaService} è la parte che si occupa della gestione generale di tutti i servizi, visto un po' come file "mainService".
 
 \section{Persistenza dei Dati}
-Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, scelta dettata in primis dalla semplicità di utilizzo e dalla facile manutenibilità. Le modifiche che vengono fatte nell'interfaccia grafica, a seguito della conferma tramite pop-up, vengono scritte subito nel file JSON. La maggior parte del codice di gestione del file JSON è contenuta nel file \texttt{jsonService}. Il codice JSON è così strutturato:
+Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, scelta dettata innanzitutto dalla semplicità di utilizzo e dalla facile manutenibilità. Le modifiche che vengono fatte nell'interfaccia grafica, a seguito della conferma tramite pop-up, vengono scritte subito nel file JSON. La maggior parte del codice di gestione del file JSON è contenuta nel file \texttt{jsonService}.\newline
+Il codice JSON è così strutturato:
 
-\begin{lstlisting}[language=json]
+\begin{lstlisting}[style=jsonstyle]
 "media": [
     {
         "anno": 1986,
@@ -149,7 +182,8 @@ Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, s
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Bottoni del \texttt{topMenuWidget}. In ordine:
+        Bottoni del \texttt{topMenuWidget}.\newline
+        In ordine:
         \begin{itemize}
             \item Carica una biblioteca esistente
             \item Crea e apre una nuova biblioteca
@@ -167,7 +201,8 @@ Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, s
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Nel \texttt{leftMenu} viene creata la barra di ricerca che, ad ogni cambiamento (ogni volta che viene digitato un carattere), cerca l'elemento nella biblioteca. La ricerca è case insensitive e funziona anche con ricerca parziale. Sotto sono presenti i media categorizzati per tipologia.
+        Nel \texttt{leftMenu} viene creata la barra di ricerca che, ad ogni cambiamento (ogni volta che viene digitato un carattere), cerca l'elemento nella biblioteca.\newline
+        La ricerca è "case insensitive" e funziona anche con ricerca parziale. Sotto sono presenti i media categorizzati per tipologia.
     \end{minipage}
 \end{figure}
 
@@ -178,15 +213,73 @@ Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, s
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Un esempio di elemento media: a sinistra viene caricata l'immagine, mentre a destra vengono visualizzati tutti i dettagli. All'estrema destra ci sono due bottoni: il primo permette di modificare il media, il secondo di cancellarlo dalla libreria. Entrambe le funzioni di modifica ed eliminazione, appena confermate, vanno a modificare direttamente il file JSON.  
-        Alcuni miglioramenti che non ho implementato: una gestione migliore dello scaling dell'immagine e un'eventuale ricerca automatica online, per alleggerire l'utente dal dover scaricare e gestire manualmente le immagini.
+        Un esempio di elemento media: a sinistra viene caricata l'immagine, mentre a destra vengono visualizzati tutti i dettagli. All'estrema destra ci sono due bottoni: il primo permette di modificare il media, il secondo di cancellarlo dalla libreria. Entrambe le funzioni di modifica ed eliminazione, appena confermate, vanno a modificare direttamente il file JSON.\newline
+        Alcuni miglioramenti che non ho implementato: una gestione migliore dello scaling dell'immagine ed un'eventuale ricerca automatica online, per alleggerire l'utente dal dover scaricare e gestire manualmente le immagini.
     \end{minipage}
 \end{figure}
 
 \clearpage
 
 \section{Polimorfismo}
-(da completare)
+
+\subsection{getSpecificDetails()}
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+\\ Dichiarazione
+    virtual std::vector<std::pair<string, string>> getSpecificDetails() const = 0;
+
+\\ Implementazione
+    std::vector<std::pair<string, string>> Anime::getSpecificDetails() const {
+    auto details = getSeriesBaseDetails(); // Eredita da Series
+    details.insert(details.end(), {
+        {"Disegnatore", disegnatore},
+        {"Studio", studioAnimazione}
+    });
+    return details;
+    }
+\end{lstlisting}
+
+La funzione \texttt{getSpecificDetails()} è una funzione virtuale pura definita nella classe astratta \texttt{Media} e ridefinita in ogni classe concreta. Questa funzione viene utilizzata per ottenere i dettagli specifici di ogni tipo di media, restituendo un vettore di coppie chiave-valore che rappresentano gli attributi specifici dell'istanza. Ad esempio, la classe \texttt{Anime} eredita da \texttt{Series} e aggiunge dettagli specifici come "Disegnatore" e "Studio". Ho scelto di utilizzare questo approccio contro all utilizzo di dinamyc\_cast per ottenere i valori specifici di ogni media visto che mantiene il codice piú pulito e leggibile.
+
+\subsection{toJsonSpecific() / fromJsonSpecific()}
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+\\ Dichiarazioni
+
+    virtual QJsonObject toJsonSpecific() const = 0;
+    virtual void fromJsonSpecific(const QJsonObject& json) = 0;
+
+\\ implementazione
+
+    QJsonObject SerieTv::toJsonSpecific() const {
+    auto json = getSeriesBaseJson();
+    json["ideatore"] = QString::fromStdString(ideatore);
+    json["casaProduttrice"] = QString::fromStdString(casaProduttrice);
+    return json;
+    }
+\end{lstlisting}
+
+TODO
+\subsection{Clone}
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+\\ Dichiarazione
+
+    virtual Media* clone() const = 0;
+\end{lstlisting}
+
+TODO
+
+\subsection{getMediaType()}
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+\\ Dichiarazione
+
+    virtual string getMediaType() const = 0;
+\end{lstlisting}
+
+TODO
+
 
 \section{Rendiconto delle tempistiche}
 Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quanto è stato sviluppato trovando il tempo tra lo studio e il lavoro. Escludendo lo studio personale necessario per comprendere il funzionamento di Qt e delle librerie utilizzate, e lo studio più approfondito del linguaggio C++, posso stimare circa 65 ore di sviluppo.
@@ -197,26 +290,30 @@ Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quan
 \hline
 \textbf{Jobs} & \textbf{Scheduled hours} & \textbf{Actual hours} & \textbf{Notes} \\
 \hline
-Modellazione diagramma UML          & 1  & 2  & Il tempo é stato sforato perché nel corso dello sviluppo del progetto sono state necessarie delle modifiche \\
+Modellazione diagramma UML          & 1  & 2  & Il tempo é stato sforato perché nel corso dello sviluppo del progetto sono state necessarie delle modifiche. \\
 Bozza interfaccia Grafica           & 1  & 1  &   \\
-Implementazione modello Logico      & 5  & 5  & Implementazione veloce grazie al diagramma UML già deciso \\
+Implementazione modello Logico      & 5  & 5  & Implementazione veloce grazie al diagramma UML già deciso. \\
 Implementazione Interfaccia grafica & 15 & 20 &   \\
 Implementazione parte Service       & 15 & 15 &   \\
-Affinamento Progetto                & 5  & 10 & Questo Job sarebbe da includere nel implementazione della parte di Service, ma visto che é stato lavorato anche su altro ho deciso di considerarlo a parte \\
-Debug                               & 5  & 7  & Quantificare il tempo di debug risulta difficile visto che il progetto é stato sviluppato per parti e dopo ogni modifica spesso risultava necessario sistemare qualcosa. Alcuni bug invece sono stati trovati con un uso piú attento dell applicazione \\
+Affinamento Progetto                & 5  & 10 & Questo Job sarebbe da includere nella implementazione della parte di Service, ma visto che é stato lavorato anche su altro ho deciso di considerarlo a parte. \\
+Debug                               & 5  & 7  & Quantificare il tempo di debug risulta difficile visto che il progetto é stato sviluppato per parti e dopo ogni modifica spesso risultava necessario sistemare qualcosa. Alcuni bug invece sono stati trovati con un uso piú attento dell applicazione. \\
 Modifiche Finali                    & 5  & 5  &   \\
 \hline
 \end{tabularx}
 \end{table}
 
+\section{Possibili Miglioramenti}
+\begin{itemize}
+    \item Implementare una ricerca online della copertina dei media.
+    \item Attualmente Serie Tv, Anime e manga sono stati implementati pensando che l' utente sia in possesso di tutti i volumi o episodi di questi. Sarebbe da rendere possibile all'utente di inserire quali volumi o episodi é effettivamente in possesso.
+    \item Implementare uno scaling e ridimensionamento delle immagini di copertina migliore.
+    \item Implementare tema scuro.
+\end{itemize}
+
 \section{Used Words}
 \begin{itemize}
     \item Factory Method Pattern: Definizione da \href{https://it.wikipedia.org/wiki/Factory_method}{Wikipedia}  In programmazione, la "factory" o Factory Method Pattern è un design pattern creazionale che permette di creare oggetti senza specificare la classe esatta dell'oggetto da istanziare. Funziona definendo un'interfaccia per la creazione di oggetti, ma lasciando che le sottoclassi decidano quale oggetto specifico creare, delegando così la responsabilità della creazione. Ho utilizzato la parola factory dove ho utilizzato questo desing pattern, essendo una cosa che ho scoperto durante la creazione di questo progetto mi sono fatto aiutare molto da esempi o altri riferimenti online, non sono sicuro dell uso corretto di questo metodo.
-\end{itemize}
-\section{TODO}
-\begin{itemize}
-    \item descrivere l’utilizzo non banale del polimorfismo, identificando quali metodi sono polimorfi e il loro valore aggiunto all’interno del progetto
-    \item completare la rendicontazione delle ore previste ed effettivamente svolte
+    \item Media: viene inteso come qualsiasi elemento singolo che puó essere Cd, Manga, Serie Tv, Libro e Film
 \end{itemize}
 
 \end{document}
