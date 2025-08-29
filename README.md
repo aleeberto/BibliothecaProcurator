@@ -7,15 +7,18 @@ Project for the course "Programmazione ad Oggetti"
 ```
 BibliothecaProcurator/
 │
+├── docker/
+│
+├── relazione/
+│
 ├── resources/
 │   ├── data/
 │   ├── icon/
 │   └── img/
 │
 ├── src/
-│   ├── services/
 │   ├── logic/
-│   ├── utils/
+│   ├── services/
 │   ├── ui/
 │   └── main.cpp
 │
