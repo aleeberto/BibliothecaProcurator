@@ -129,11 +129,11 @@
 \maketitle
 
 \begin{abstract}
-\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un'applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca virtuale.
+\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un'applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca. 
 \end{abstract}
 
 \section{Introduzione}
-Il progetto proponeva di creare un'applicazione che permettesse la gestione di una biblioteca. L'applicazione che ho deciso di creare non riguarda l'organizzazione di una biblioteca pubblica, bensì l'organizzazione di una biblioteca privata in modo da poter strutturare e catalogare libri, film, CD e simili per un privato con collezioni ampie. Mi sono dedicato questo obbiettivo poiché, oltre a poter avere un'utilità per me, ho notato che non si trovano prodotti simili online e, se si trovano, si tratta di applicazioni datate, a pagamento o non più mantenute.
+Bibliotheca procurator dal latino "direttore della biblioteca", il nome che ho deciso di dare all applicazione. Il progetto proponeva di creare un'applicazione che permettesse la gestione di una biblioteca. L'applicazione che ho deciso di creare non riguarda l'organizzazione di una biblioteca pubblica, bensì l'organizzazione di una biblioteca privata in modo da poter strutturare e catalogare libri, film, CD e simili per un privato con collezioni ampie. Mi sono dedicato questo obbiettivo poiché, oltre a poter avere un'utilità per me, ho notato che non si trovano prodotti simili online e, se si trovano, si tratta di applicazioni datate, a pagamento o non più mantenute.
 
 \section{Struttura del Progetto}
 \subsection{Logic}
@@ -259,7 +259,7 @@ La funzione \texttt{getSpecificDetails()} è una funzione virtuale pura definita
     }
 \end{lstlisting}
 
-TODO
+Ho deciso di implementare questo approccio dopo aver provato a gestire i vari tipi di media con dei dynamic\_cast. La gestione dei vari tipi di media con i cast risultava comunque semplice ma rendeva il codice meno leggibile. Con questo approccio poi la serializzazione é "automatica" e non richiede di scrivere i campi specifici per ogni tipo di media. Eventuali modifiche o aggiunte possono essere gestite direttamente nella classe specifica.
 \subsection{Clone}
 
 \begin{lstlisting}[language=cpp, style=cppstyle]
@@ -268,7 +268,7 @@ TODO
     virtual Media* clone() const = 0;
 \end{lstlisting}
 
-TODO
+Implementazione del metodo clone senza essere a conoscenza del tipo concreto. Ogni classe specifica gestisce l' allocazione della memoria per il proprio oggetto e garantisce che tutti i dati vengano copiati correttamente.
 
 \subsection{getMediaType()}
 
@@ -278,8 +278,7 @@ TODO
     virtual string getMediaType() const = 0;
 \end{lstlisting}
 
-TODO
-
+Implementando questa funzione ho potuto rimuovere tutti i dynamic\_cast e typeid. Ho una chiamata diretta permettendomi di non utilizzare cast che in termini di computazione sono costosi e a rischio di errori. Anche qui ogni classe specifica gestisce il proprio tipo.
 
 \section{Rendiconto delle tempistiche}
 Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quanto è stato sviluppato trovando il tempo tra lo studio e il lavoro. Escludendo lo studio personale necessario per comprendere il funzionamento di Qt e delle librerie utilizzate, e lo studio più approfondito del linguaggio C++, posso stimare circa 65 ore di sviluppo.
@@ -313,7 +312,8 @@ Modifiche Finali                    & 5  & 5  &   \\
 \section{Used Words}
 \begin{itemize}
     \item Factory Method Pattern: Definizione da \href{https://it.wikipedia.org/wiki/Factory_method}{Wikipedia}  In programmazione, la "factory" o Factory Method Pattern è un design pattern creazionale che permette di creare oggetti senza specificare la classe esatta dell'oggetto da istanziare. Funziona definendo un'interfaccia per la creazione di oggetti, ma lasciando che le sottoclassi decidano quale oggetto specifico creare, delegando così la responsabilità della creazione. Ho utilizzato la parola factory dove ho utilizzato questo desing pattern, essendo una cosa che ho scoperto durante la creazione di questo progetto mi sono fatto aiutare molto da esempi o altri riferimenti online, non sono sicuro dell uso corretto di questo metodo.
-    \item Media: viene inteso come qualsiasi elemento singolo che puó essere Cd, Manga, Serie Tv, Libro e Film
+    \item Media: viene inteso come qualsiasi elemento singolo che puó essere Cd, Manga, Serie Tv, Libro e Film..
+    \item Cast: usata indicando gli static\_cast ma principalmente in questo caso per i dynamic\_cast.
 \end{itemize}
 
 \end{document}
