@@ -16,6 +16,9 @@
 #include "../../logic/media.h"
 #include "../../services/mediaService.h"
 
+// Forward declaration
+class FormWidgetVisitor;
+
 class CreateItemWidget : public QWidget
 {
     Q_OBJECT

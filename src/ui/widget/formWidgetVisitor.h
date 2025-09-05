@@ -1,5 +1,5 @@
-#ifndef MEDIAWIDGETVISITOR_HEADER
-#define MEDIAWIDGETVISITOR_HEADER
+#ifndef FORMWIDGETVISITOR_HEADER
+#define FORMWIDGETVISITOR_HEADER
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -8,16 +8,14 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include "../../logic/mediaVisitor.h"
-#include "../../services/uiService.h"
 
-class MediaWidgetVisitor : public MediaVisitor {
+class FormWidgetVisitor : public MediaVisitor {
 private:
     QWidget* parentWidget;
-    UIService* uiService;
     QWidget* resultWidget;
     
 public:
-    explicit MediaWidgetVisitor(QWidget* parent, UIService* ui);
+    explicit FormWidgetVisitor(QWidget* parent);
     
     void visit(Film* film) override;
     void visit(SerieTv* serieTv) override;
@@ -29,9 +27,8 @@ public:
     QWidget* getResultWidget() const;
     
 private:
-    QWidget* createBaseWidget(Media* media);
-    void addCommonInfo(QVBoxLayout* layout, Media* media);
-    void addActionButtons(QVBoxLayout* layout, Media* media);
+    QWidget* createFormWidget(const QStringList& fieldLabels, const QStringList& placeholders, const QStringList& values = QStringList());
+    void populateFormFields(QWidget* formWidget, const QStringList& values);
 };
 
 #endif
