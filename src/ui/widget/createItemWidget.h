@@ -15,7 +15,6 @@
 #include <utility>
 #include "../../logic/media.h"
 #include "../../services/mediaService.h"
-#include "formWidgetVisitor.h"
 
 class CreateItemWidget : public QWidget
 {

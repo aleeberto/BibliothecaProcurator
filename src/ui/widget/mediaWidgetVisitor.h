@@ -29,9 +29,9 @@ public:
     QWidget* getResultWidget() const;
     
 private:
-    QWidget* createBaseWidget(Media* media);
+    QWidget* createBaseWidget();
     void addCommonInfo(QVBoxLayout* layout, Media* media);
-    void addActionButtons(QHBoxLayout* layout, Media* media);
+    void addActionButtons(QVBoxLayout* layout, Media* media);  // Corretto: QVBoxLayout invece di QHBoxLayout
 };
 
 #endif

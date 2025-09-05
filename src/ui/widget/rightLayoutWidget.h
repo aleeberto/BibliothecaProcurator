@@ -7,7 +7,9 @@
 #include "../../logic/media.h"
 #include "../../services/jsonService.h"
 #include "../../services/uiService.h"
-#include "mediaWidgetVisitor.h"
+
+// Forward declaration
+class MediaWidgetVisitor;
 
 class RightLayoutWidget : public QWidget
 {
