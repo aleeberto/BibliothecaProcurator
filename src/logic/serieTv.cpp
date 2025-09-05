@@ -20,29 +20,16 @@ void SerieTv::setCasaProduttrice(const string &updCasaProduttrice){
     casaProduttrice = updCasaProduttrice;
 }
 
-// Implementazione metodi virtuali
-string SerieTv::getMediaType() const {
-    return "Serie Tv";
-}
-
-std::vector<std::pair<string, string>> SerieTv::getSpecificDetails() const {
-    auto details = getSeriesBaseDetails(); // Eredita dettagli base serie
-    details.insert(details.end(), {
-        {"Ideatore", ideatore},
-        {"Casa produttrice", casaProduttrice}
-    });
-    return details;
-}
-
 QJsonObject SerieTv::toJsonSpecific() const {
-    auto json = getSeriesBaseJson(); // Eredita JSON base serie
+    auto json = getSeriesBaseJson();
+    json["type"] = "Serie Tv";
     json["ideatore"] = QString::fromStdString(ideatore);
     json["casaProduttrice"] = QString::fromStdString(casaProduttrice);
     return json;
 }
 
 void SerieTv::fromJsonSpecific(const QJsonObject& json) {
-    setSeriesBaseFromJson(json); // Imposta campi base serie
+    setSeriesBaseFromJson(json);
     ideatore = json["ideatore"].toString().toStdString();
     casaProduttrice = json["casaProduttrice"].toString().toStdString();
 }
@@ -51,4 +38,14 @@ Media* SerieTv::clone() const {
     return new SerieTv(getTitolo(), getAnno(), getImmagine(), getNumEpisodi(), 
                       getNumStagioni(), getDurataMediaEp(), getInCorso(), 
                       ideatore, casaProduttrice);
+}
+
+void SerieTv::accept(MediaVisitor* visitor) {
+    if (visitor) {
+        visitor->visit(this);
+    }
+}
+
+bool SerieTv::matchesCategory(const string& category) const {
+    return category == "Tutti" || category == "Serie Tv";
 }

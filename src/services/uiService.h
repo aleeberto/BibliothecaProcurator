@@ -6,7 +6,6 @@
 #include <QStringList>
 #include <QPixmap>
 #include "../logic/media.h"
-#include "mediaTypeUtils.h"
 
 class UIService : public QObject
 {
@@ -17,8 +16,6 @@ public:
 
     QString formatMediaTitle(Media* media) const;
     QString formatMediaYear(Media* media) const;
-    QString formatMediaType(Media* media) const;
-    QStringList formatMediaDetails(Media* media) const;
     
     QPixmap loadMediaImage(const std::string& imagePath) const;
     QPixmap createImagePlaceholder(const std::string& originalPath) const;

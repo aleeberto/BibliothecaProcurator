@@ -28,23 +28,9 @@ void Cd::setDurataMedTracce(const int &updDurataMedTracce){
     durataMedTracce = updDurataMedTracce;
 }
 
-// Implementazione metodi virtuali
-string Cd::getMediaType() const {
-    return "Cd";
-}
-
-// Eredita direttamente da classe media
-
-std::vector<std::pair<string, string>> Cd::getSpecificDetails() const {
-    return {
-        {"Artista", artista},
-        {"Tracce", std::to_string(numTracce)},
-        {"Durata media", std::to_string(durataMedTracce) + " sec"}
-    };
-}
-
 QJsonObject Cd::toJsonSpecific() const {
     QJsonObject json;
+    json["type"] = "Cd";
     json["artista"] = QString::fromStdString(artista);
     json["numTracce"] = numTracce;
     json["durataMedTracce"] = durataMedTracce;
@@ -59,4 +45,14 @@ void Cd::fromJsonSpecific(const QJsonObject& json) {
 
 Media* Cd::clone() const {
     return new Cd(getTitolo(), getAnno(), getImmagine(), artista, numTracce, durataMedTracce);
+}
+
+void Cd::accept(MediaVisitor* visitor) {
+    if (visitor) {
+        visitor->visit(this);
+    }
+}
+
+bool Cd::matchesCategory(const string& category) const {
+    return category == "Tutti" || category == "Cd";
 }

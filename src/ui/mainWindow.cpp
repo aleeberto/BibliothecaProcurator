@@ -11,7 +11,6 @@
 #include <QPainter>
 #include <QCoreApplication>
 #include "../services/styleUtils.h"
-#include "../services/mediaTypeUtils.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -135,11 +134,11 @@ void MainWindow::setupCategoryButtons()
         connect(btn, &QPushButton::clicked, this, [this, category]() {
             currentCategory = category;
             
-            // Usa MediaService per filtrare i media
-            QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(category, searchBar->text());
+            // Usa MediaService per filtrare i media con polimorfismo
+            QVector<Media*> filteredMedia = mediaService->filterMedia(category, searchBar->text());
             rightLayoutWidget->setMediaCollection(filteredMedia);
             rightLayoutWidget->setJsonService(jsonService);
-            rightLayoutWidget->displayMediaByCategory("Tutti", "");
+            rightLayoutWidget->displayMediaCollection();
 
             // Modifiche ai bottoni delle categorie
             for (QPushButton *button : categoryButtons) {
@@ -169,11 +168,11 @@ void MainWindow::loadMediaData(const QString &filePath)
     if (mediaService->loadFromFile(filePath)) {
         currentJsonPath = filePath;
         
-        // Aggiorna la visualizzazione con i media filtrati (pessione bottoni delle categorie)
-        QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(currentCategory, searchBar->text());
+        // Aggiorna la visualizzazione con i media filtrati usando polimorfismo
+        QVector<Media*> filteredMedia = mediaService->filterMedia(currentCategory, searchBar->text());
         rightLayoutWidget->setMediaCollection(filteredMedia);
         rightLayoutWidget->setJsonService(jsonService);
-        rightLayoutWidget->displayMediaByCategory("Tutti", "");
+        rightLayoutWidget->displayMediaCollection();
     }
 }
 
@@ -251,25 +250,25 @@ void MainWindow::onMediaItemCreated(Media* newItem)
                 // Finestra di dialogo per confermare la creazione
                 QMessageBox::information(this, "Successo", 
                     "Media creato e salvato correttamente!\n" + 
-                    MediaTypeUtils::getMediaTitle(newItem) + " è stato aggiunto alla biblioteca.");
+                    QString::fromStdString(newItem->getTitolo()) + " è stato aggiunto alla biblioteca.");
             } else {
                 QMessageBox::warning(this, "Attenzione",
                     "Media creato ma non è stato possibile salvarlo automaticamente.\n"
                     "Usa il pulsante 'Salva' per salvare manualmente i dati.");
             }
             
-            QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(currentCategory, searchBar->text());
+            QVector<Media*> filteredMedia = mediaService->filterMedia(currentCategory, searchBar->text());
             rightLayoutWidget->setMediaCollection(filteredMedia);
-            rightLayoutWidget->displayMediaByCategory("Tutti", "");
+            rightLayoutWidget->displayMediaCollection();
         }
     }
 }
 
 void MainWindow::onSearchTextChanged(const QString& text)
 {
-    QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(currentCategory, text);
+    QVector<Media*> filteredMedia = mediaService->filterMedia(currentCategory, text);
     rightLayoutWidget->setMediaCollection(filteredMedia);
-    rightLayoutWidget->displayMediaByCategory("Tutti", "");
+    rightLayoutWidget->displayMediaCollection();
 }
 
 void MainWindow::onMediaEditRequested(Media* media)
@@ -292,13 +291,13 @@ void MainWindow::onMediaDeleteRequested(Media* media)
         this,
         "Conferma Eliminazione",
         QString("Sei sicuro di voler eliminare '%1'?\n\nQuesta operazione non può essere annullata.")
-            .arg(MediaTypeUtils::getMediaTitle(media)),
+            .arg(QString::fromStdString(media->getTitolo())),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::No
     );
     
     if (reply == QMessageBox::Yes) {
-        QString mediaTitle = MediaTypeUtils::getMediaTitle(media);
+        QString mediaTitle = QString::fromStdString(media->getTitolo());
         
         // Elimina il media tramite MediaService
         if (mediaService->deleteMedia(media)) {
@@ -310,9 +309,9 @@ void MainWindow::onMediaDeleteRequested(Media* media)
                         .arg(mediaTitle));
                 
                 // Aggiorna la visualizzazione con i media filtrati
-                QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(currentCategory, searchBar->text());
+                QVector<Media*> filteredMedia = mediaService->filterMedia(currentCategory, searchBar->text());
                 rightLayoutWidget->setMediaCollection(filteredMedia);
-                rightLayoutWidget->displayMediaByCategory("Tutti", "");
+                rightLayoutWidget->displayMediaCollection();
                 
             } else {
                 QMessageBox::critical(this, "Errore",
@@ -334,12 +333,12 @@ void MainWindow::onMediaItemUpdated(Media* oldMedia, Media* newMedia)
             
             QMessageBox::information(this, "Successo", 
                 QString("'%1' è stato aggiornato")
-                    .arg(MediaTypeUtils::getMediaTitle(newMedia)));
+                    .arg(QString::fromStdString(newMedia->getTitolo())));
             
             // Aggiorna la visualizzazione con i media filtrati
-            QVector<Media*> filteredMedia = mediaService->filterByCategoryAndSearch(currentCategory, searchBar->text());
+            QVector<Media*> filteredMedia = mediaService->filterMedia(currentCategory, searchBar->text());
             rightLayoutWidget->setMediaCollection(filteredMedia);
-            rightLayoutWidget->displayMediaByCategory("Tutti", "");
+            rightLayoutWidget->displayMediaCollection();
             
         } else {
             QMessageBox::critical(this, "Errore",
@@ -380,7 +379,7 @@ void MainWindow::handleCloseRequest()
         
         // Pulisci la visualizzazione
         rightLayoutWidget->setMediaCollection(QVector<Media*>());
-        rightLayoutWidget->displayMediaByCategory("Tutti", "");
+        rightLayoutWidget->displayMediaCollection();
         
         QMessageBox::information(this, "Biblioteca Chiusa", "La biblioteca è stata chiusa correttamente.");
     }

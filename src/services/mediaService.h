@@ -34,9 +34,8 @@ public:
     bool saveToFile(const QString& filePath);
     void setJsonService(JsonService* service);
 
-    QVector<Media*> filterByCategory(const QString& category) const;
-    QVector<Media*> searchByTitle(const QString& searchText) const;
-    QVector<Media*> filterByCategoryAndSearch(const QString& category, const QString& searchText) const;
+    // Nuovi metodi che usano polimorfismo invece di getType
+    QVector<Media*> filterMedia(const QString& category, const QString& searchText) const;
 
     int getMediaCount() const;
     bool isEmpty() const;

@@ -11,6 +11,7 @@
 #include <functional>
 #include <unordered_map>
 #include "../logic/media.h"
+#include "jsonTypeVisitor.h"
 
 class JsonService : public QObject
 {
@@ -27,32 +28,19 @@ public:
     Media* findMedia(const QString &title) const;
     void clearAll();
     
-    // Metodo per registrare factory di creazione media
-    template<typename T>
-    void registerMediaType(const QString& typeName);
-    
 private:
     QJsonArray mediaArray;
+    JsonTypeVisitor typeVisitor;
     
     // Factory map per la creazione
     std::unordered_map<std::string, std::function<std::unique_ptr<Media>(const QJsonObject&)>> mediaFactories;
     
     // Metodi helper 
     std::unique_ptr<Media> createMediaFromJson(const QJsonObject &jsonObj) const;
-    QJsonObject mediaToJson(Media *media) const;
+    QJsonObject mediaToJson(Media *media);
     
     // Inizializzazione delle factory
     void initializeFactories();
 };
-
-// Implementazione template nel header
-template<typename T>
-void JsonService::registerMediaType(const QString& typeName) {
-    mediaFactories[typeName.toStdString()] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
-        auto media = std::make_unique<T>("", 0, ""); // = altri metdi default
-        media->fromJsonSpecific(json);
-        return std::move(media);
-    };
-}
 
 #endif

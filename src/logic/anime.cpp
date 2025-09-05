@@ -20,29 +20,16 @@ void Anime::setStudioAnimazione(const string &updStudioAnimazione){
     studioAnimazione = updStudioAnimazione;
 }
 
-// Implementazione metodi virtuali
-string Anime::getMediaType() const {
-    return "Anime";
-}
-
-std::vector<std::pair<string, string>> Anime::getSpecificDetails() const {
-    auto details = getSeriesBaseDetails(); // Eredita dettagli base delle serie
-    details.insert(details.end(), {
-        {"Disegnatore", disegnatore},
-        {"Studio", studioAnimazione}
-    });
-    return details;
-}
-
 QJsonObject Anime::toJsonSpecific() const {
-    auto json = getSeriesBaseJson(); // Eredita JSON base delle serie
+    auto json = getSeriesBaseJson();
+    json["type"] = "Anime";
     json["disegnatore"] = QString::fromStdString(disegnatore);
     json["studioAnimazione"] = QString::fromStdString(studioAnimazione);
     return json;
 }
 
 void Anime::fromJsonSpecific(const QJsonObject& json) {
-    setSeriesBaseFromJson(json); // Imposta campi base delle serie
+    setSeriesBaseFromJson(json);
     disegnatore = json["disegnatore"].toString().toStdString();
     studioAnimazione = json["studioAnimazione"].toString().toStdString();
 }
@@ -51,4 +38,14 @@ Media* Anime::clone() const {
     return new Anime(getTitolo(), getAnno(), getImmagine(), getNumEpisodi(), 
                     getNumStagioni(), getDurataMediaEp(), getInCorso(), 
                     disegnatore, studioAnimazione);
+}
+
+void Anime::accept(MediaVisitor* visitor) {
+    if (visitor) {
+        visitor->visit(this);
+    }
+}
+
+bool Anime::matchesCategory(const string& category) const {
+    return category == "Tutti" || category == "Anime";
 }

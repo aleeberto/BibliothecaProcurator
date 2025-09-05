@@ -1,6 +1,6 @@
 #include "rightLayoutWidget.h"
+#include "mediaWidgetVisitor.h"  // Include qui nel cpp
 #include "../../services/styleUtils.h"
-#include "../../services/mediaTypeUtils.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -8,7 +8,7 @@
 #include <QScrollArea>
 #include <QPushButton>
 
-RightLayoutWidget::RightLayoutWidget(QWidget *parent) : QWidget(parent), jsonService(nullptr), uiService(nullptr)
+RightLayoutWidget::RightLayoutWidget(QWidget *parent) : QWidget(parent), jsonService(nullptr), uiService(nullptr), widgetVisitor(nullptr)
 {
     setStyleSheet(
         "QWidget { background-color: #f5f5f5; }"
@@ -18,14 +18,12 @@ RightLayoutWidget::RightLayoutWidget(QWidget *parent) : QWidget(parent), jsonSer
     mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
-
-    currentCategory = "Tutti";
-    currentSearchText = "";
 }
 
 RightLayoutWidget::~RightLayoutWidget()
 {
     clearLayout();
+    delete widgetVisitor;
 }
 
 void RightLayoutWidget::setMediaCollection(const QVector<Media*>& collection)
@@ -41,29 +39,22 @@ void RightLayoutWidget::setJsonService(JsonService* service)
 void RightLayoutWidget::setUIService(UIService* service)
 {
     uiService = service;
+    // Inizializza il visitor quando UIService è disponibile
+    if (uiService && !widgetVisitor) {
+        widgetVisitor = new MediaWidgetVisitor(this, uiService);
+    }
 }
 
-void RightLayoutWidget::displayMediaByCategory(const QString &category, const QString &searchText)
+void RightLayoutWidget::displayMediaCollection()
 {
-    currentCategory = category;
-    currentSearchText = searchText.toLower();
-    
     clearLayout();
 
     for (Media* media : mediaCollection) {
-        QString mediaType = MediaTypeUtils::getMediaTypeName(media);
-        QString mediaTitle = QString::fromStdString(media->getTitolo()).toLower();
-
-        if ((category == "Tutti" || mediaType == category) &&
-            (currentSearchText.isEmpty() || mediaTitle.contains(currentSearchText))) {
-            addMediaCardToLayout(media);
-        }
+        addMediaCardToLayout(media);
     }
 
     mainLayout->addStretch();
 }
-
-// Gestione CreateItemWidget, (Non elimina, rimuove da layout) nasconde e rimuove parent
 
 void RightLayoutWidget::clearLayout()
 {
@@ -100,92 +91,55 @@ void RightLayoutWidget::showCreateItemWidget(QWidget* createWidget)
     createWidget->show();
     createWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mainLayout->addWidget(createWidget, 1);
-
-    //Stretch = 1 occupa tutto lo spazio
 }
 
 void RightLayoutWidget::addMediaCardToLayout(Media* media)
 {
-    if (!media || !uiService) return;
+    if (!media || !uiService || !widgetVisitor) return;
     
-    QWidget *mediaCard = new QWidget();
-    mediaCard->setStyleSheet(
-        "QWidget {"
-        "  border: 1px solid #ddd;"
-        "  border-radius: 5px;"
-        "  margin: 5px;"
-        "  background: white;"
-        "}"
-    );
+    // Usa il visitor per creare il widget specifico per il tipo di media
+    media->accept(widgetVisitor);
+    QWidget* mediaCard = widgetVisitor->getResultWidget();
+    
+    if (!mediaCard) return;
 
-    QHBoxLayout *cardLayout = new QHBoxLayout(mediaCard);
-    cardLayout->setContentsMargins(10, 10, 10, 10);
-
-    // Immagine
-    QLabel *imgLabel = new QLabel();
-    imgLabel->setPixmap(uiService->loadMediaImage(media->getImmagine()));
-    imgLabel->setAlignment(Qt::AlignTop);
-
-    // Dettagli
-    QWidget *detailsWidget = new QWidget();
-    QVBoxLayout *detailsLayout = new QVBoxLayout(detailsWidget);
-    detailsLayout->setAlignment(Qt::AlignTop);
-
-    // Usa UIService per formattare i dati
-    QLabel *titleLabel = new QLabel(uiService->formatMediaTitle(media));
-    titleLabel->setStyleSheet("font-size: 14px;");
-
-    QLabel *yearLabel = new QLabel(uiService->formatMediaYear(media));
-    QLabel *typeLabel = new QLabel(uiService->formatMediaType(media));
-
-    detailsLayout->addWidget(titleLabel);
-    detailsLayout->addWidget(yearLabel);
-    detailsLayout->addWidget(typeLabel);
-
-    // Aggiungi i dettagli specifici del tipo di media
-    QStringList details = uiService->formatMediaDetails(media);
-    for (const QString& detail : details) {
-        detailsLayout->addWidget(new QLabel(detail));
+    // Trova e connetti i pulsanti usando il pattern visitor
+    QList<QPushButton*> buttons = mediaCard->findChildren<QPushButton*>();
+    for (QPushButton* button : buttons) {
+        if (button->objectName() == "editButton") {
+            connect(button, &QPushButton::clicked, this, &RightLayoutWidget::onEditButtonClicked);
+        } else if (button->objectName() == "deleteButton") {
+            connect(button, &QPushButton::clicked, this, &RightLayoutWidget::onDeleteButtonClicked);
+        }
     }
 
-    detailsLayout->addStretch();
-
-    // Bottoni elimia e modifica. Ultime righe segnale collegato
-    QWidget *buttonsWidget = new QWidget();
-    QVBoxLayout *buttonsLayout = new QVBoxLayout(buttonsWidget);
-    buttonsLayout->setAlignment(Qt::AlignTop);
-    buttonsLayout->setSpacing(10);
-
-    // Edit button
-    QPushButton *editButton = new QPushButton(this);
-    editButton->setFixedHeight(44);
-    editButton->setToolTip("Modifica questo elemento");
-    editButton->setIcon(QIcon("../resources/icon/edit.png"));
-    editButton->setStyleSheet(StyleUtils::getItemButtonStyle());
-
-
-    // Delete button
-    QPushButton *deleteButton = new QPushButton(this);
-    deleteButton->setFixedHeight(44);
-    deleteButton->setToolTip("Elimina questo elemento");
-    deleteButton->setIcon(QIcon("../resources/icon/delete.png"));
-    deleteButton->setStyleSheet(StyleUtils::getItemButtonStyle());
-
-    buttonsLayout->addWidget(editButton);
-    buttonsLayout->addWidget(deleteButton);
-    buttonsLayout->addStretch();
-
-    connect(editButton, &QPushButton::clicked, this, [this, media]() {
-        emit mediaEditRequested(media);
-    });
-
-    connect(deleteButton, &QPushButton::clicked, this, [this, media]() {
-        emit mediaDeleteRequested(media);
-    });
-
-    cardLayout->addWidget(imgLabel);
-    cardLayout->addWidget(detailsWidget, 1);
-    cardLayout->addWidget(buttonsWidget);
-
     mainLayout->addWidget(mediaCard);
+}
+
+void RightLayoutWidget::onEditButtonClicked()
+{
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    if (!button) return;
+    
+    QVariant mediaVariant = button->property("media");
+    if (mediaVariant.isValid()) {
+        Media* media = static_cast<Media*>(mediaVariant.value<void*>());
+        if (media) {
+            emit mediaEditRequested(media);
+        }
+    }
+}
+
+void RightLayoutWidget::onDeleteButtonClicked()
+{
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
+    if (!button) return;
+    
+    QVariant mediaVariant = button->property("media");
+    if (mediaVariant.isValid()) {
+        Media* media = static_cast<Media*>(mediaVariant.value<void*>());
+        if (media) {
+            emit mediaDeleteRequested(media);
+        }
+    }
 }

@@ -12,13 +12,6 @@ void Cartaceo::setScrittore(const string &updScrittore){
     scrittore = updScrittore;
 }
 
-// Metodi helper per le classi derivate
-std::vector<std::pair<string, string>> Cartaceo::getCartaceoBaseDetails() const {
-    return {
-        {"Scrittore", scrittore}
-    };
-}
-
 QJsonObject Cartaceo::getCartaceoBaseJson() const {
     QJsonObject json;
     json["scrittore"] = QString::fromStdString(scrittore);

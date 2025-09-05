@@ -22,25 +22,6 @@ QString UIService::formatMediaYear(Media* media) const
     return "Anno: " + QString::number(media->getAnno());
 }
 
-QString UIService::formatMediaType(Media* media) const
-{
-    if (!media) return "";
-    return "Tipo: " + QString::fromStdString(media->getMediaType());
-}
-
-QStringList UIService::formatMediaDetails(Media* media) const
-{
-    QStringList details;
-    if (!media) return details;
-    
-    auto specificDetails = media->getSpecificDetails();
-    for (const auto& detail : specificDetails) {
-        details << QString::fromStdString(detail.first) + ": " + QString::fromStdString(detail.second);
-    }
-    
-    return details;
-}
-
 QPixmap UIService::loadMediaImage(const std::string& imagePath) const
 {
     QString imageQPath = QString::fromStdString(imagePath);

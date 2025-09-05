@@ -7,6 +7,7 @@
 #include "../../logic/media.h"
 #include "../../services/jsonService.h"
 #include "../../services/uiService.h"
+#include "mediaWidgetVisitor.h"
 
 class RightLayoutWidget : public QWidget
 {
@@ -19,13 +20,17 @@ public:
     void setMediaCollection(const QVector<Media*>& collection);
     void setJsonService(JsonService* service);
     void setUIService(UIService* service);
-    void displayMediaByCategory(const QString &category, const QString &searchText = "");
+    void displayMediaCollection();
     void clearLayout();
     void showCreateItemWidget(QWidget* createWidget);
 
 signals:
     void mediaEditRequested(Media* media);
     void mediaDeleteRequested(Media* media);
+
+private slots:
+    void onEditButtonClicked();
+    void onDeleteButtonClicked();
 
 private:
     void addMediaCardToLayout(Media* media);
@@ -34,8 +39,7 @@ private:
     QVector<Media*> mediaCollection;
     JsonService *jsonService;
     UIService *uiService;
-    QString currentCategory;
-    QString currentSearchText;
+    MediaWidgetVisitor *widgetVisitor;
 };
 
 #endif

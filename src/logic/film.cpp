@@ -28,23 +28,9 @@ void Film::setDurata(const int &updDurata){
     durata = updDurata;
 }
 
-// Implementazione metodi virtuali
-string Film::getMediaType() const {
-    return "Film";
-}
-
-// Eredita direttamente da classe media
-
-std::vector<std::pair<string, string>> Film::getSpecificDetails() const {
-    return {
-        {"Regista", regista},
-        {"Protagonista", attoreProtagonista},
-        {"Durata", std::to_string(durata) + " min"}
-    };
-}
-
 QJsonObject Film::toJsonSpecific() const {
     QJsonObject json;
+    json["type"] = "Film";
     json["regista"] = QString::fromStdString(regista);
     json["attoreProtagonista"] = QString::fromStdString(attoreProtagonista);
     json["durata"] = durata;
@@ -59,4 +45,14 @@ void Film::fromJsonSpecific(const QJsonObject& json) {
 
 Media* Film::clone() const {
     return new Film(getTitolo(), getAnno(), getImmagine(), regista, attoreProtagonista, durata);
+}
+
+void Film::accept(MediaVisitor* visitor) {
+    if (visitor) {
+        visitor->visit(this);
+    }
+}
+
+bool Film::matchesCategory(const string& category) const {
+    return category == "Tutti" || category == "Film";
 }

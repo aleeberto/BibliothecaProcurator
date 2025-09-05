@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <QJsonObject>
+#include "mediaVisitor.h"
 
 using std::string;
 
@@ -25,13 +26,18 @@ class Media{
         void setAnno(const int &updAnno);
         
         // Metodi virtuali
-        virtual string getMediaType() const = 0;
-        virtual std::vector<std::pair<string, string>> getSpecificDetails() const = 0;
         virtual QJsonObject toJsonSpecific() const = 0;
         virtual void fromJsonSpecific(const QJsonObject& json) = 0;
         
         // Metodo clone polimorfismo
         virtual Media* clone() const = 0;
+        
+        // Visitor pattern
+        virtual void accept(MediaVisitor* visitor) = 0;
+        
+        // Metodi di match per filtri - polimorfismo non banale
+        virtual bool matchesCategory(const string& category) const = 0;
+        virtual bool matchesSearch(const string& searchText) const;
 };
 
 #endif

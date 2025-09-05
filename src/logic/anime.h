@@ -19,11 +19,15 @@ class Anime : public Series{
         void setStudioAnimazione(const string &updStudioAnimazione);
         
         // Implementazione metodi virtuali
-        string getMediaType() const override;
-        std::vector<std::pair<string, string>> getSpecificDetails() const override;
         QJsonObject toJsonSpecific() const override;
         void fromJsonSpecific(const QJsonObject& json) override;
         Media* clone() const override;
+        
+        // Visitor pattern
+        void accept(MediaVisitor* visitor) override;
+        
+        // Polimorfismo per filtri
+        bool matchesCategory(const string& category) const override;
 };
 
 #endif

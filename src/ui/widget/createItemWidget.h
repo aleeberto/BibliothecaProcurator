@@ -15,6 +15,7 @@
 #include <utility>
 #include "../../logic/media.h"
 #include "../../services/mediaService.h"
+#include "formWidgetVisitor.h"
 
 class CreateItemWidget : public QWidget
 {
@@ -46,11 +47,8 @@ private slots:
     void onCreateButtonClicked();
 
 private:
-    void addFieldWithPlaceholder(QVBoxLayout* layout, const QString& labelText, const QString& placeholder);
+    void setupTypeSelection();
     void updateScrollBarVisibility();
-    void populateFieldsFromMedia(Media* media);
-    void populateSpecificFieldsFromDetails(QList<QLineEdit*>& fields, 
-        const std::vector<std::pair<std::string, std::string>>& details, const QString& mediaType);
 
     QComboBox *itemTypeCombo;
     QStackedWidget *stackedFields;
@@ -61,6 +59,10 @@ private:
     bool editMode;
     
     MediaService* mediaService;
+    FormWidgetVisitor* formVisitor;
+    
+    // Mappa per memorizzare i widget dei form
+    QMap<QString, QWidget*> typeWidgets;
 };
 
 #endif

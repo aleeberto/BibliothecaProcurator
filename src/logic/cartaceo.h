@@ -17,7 +17,6 @@ class Cartaceo : public Media{
         
     protected:
         // Metodi helper per le classi derivate
-        std::vector<std::pair<string, string>> getCartaceoBaseDetails() const;
         QJsonObject getCartaceoBaseJson() const;
         void setCartaceoBaseFromJson(const QJsonObject& json);
 };

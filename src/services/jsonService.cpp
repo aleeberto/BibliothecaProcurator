@@ -167,12 +167,15 @@ std::unique_ptr<Media> JsonService::createMediaFromJson(const QJsonObject &jsonO
     return nullptr;
 }
 
-QJsonObject JsonService::mediaToJson(Media *media) const {
+QJsonObject JsonService::mediaToJson(Media *media) {
     if (!media) return QJsonObject();
     
     QJsonObject jsonObj;
     
-    jsonObj["type"] = QString::fromStdString(media->getMediaType());
+    // Usa il visitor per ottenere il tipo
+    typeVisitor.reset();
+    media->accept(&typeVisitor);
+    
     jsonObj["titolo"] = QString::fromStdString(media->getTitolo());
     jsonObj["anno"] = media->getAnno();
     jsonObj["immagine"] = QString::fromStdString(media->getImmagine());

@@ -36,16 +36,6 @@ void Series::setInCorso(const bool &updInCorso){
     inCorso = updInCorso;
 }
 
-// Metodi helper per le classi derivate
-std::vector<std::pair<string, string>> Series::getSeriesBaseDetails() const {
-    return {
-        {"Stagioni", std::to_string(numStagioni)},
-        {"Episodi", std::to_string(numEpisodi)},
-        {"Durata episodio", std::to_string(durataMediaEp) + " min"},
-        {"Stato", inCorso ? "In corso" : "Conclusa"}
-    };
-}
-
 QJsonObject Series::getSeriesBaseJson() const {
     QJsonObject json;
     json["numEpisodi"] = numEpisodi;

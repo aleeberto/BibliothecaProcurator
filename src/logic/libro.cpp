@@ -20,29 +20,16 @@ void Libro::setCasaEditrice(const string &updCasaEditrice){
     casaEditrice = updCasaEditrice;
 }
 
-// Implementazione metodi virtuali
-string Libro::getMediaType() const {
-    return "Libro";
-}
-
-std::vector<std::pair<string, string>> Libro::getSpecificDetails() const {
-    auto details = getCartaceoBaseDetails(); // Eredita dettagli base cartacei
-    details.insert(details.end(), {
-        {"Anno di Stampa", std::to_string(annoStampa)},
-        {"Casa Editrice", casaEditrice}
-    });
-    return details;
-}
-
 QJsonObject Libro::toJsonSpecific() const {
-    auto json = getCartaceoBaseJson(); // Eredita JSON base cartacei
+    auto json = getCartaceoBaseJson();
+    json["type"] = "Libro";
     json["annoStampa"] = annoStampa;
     json["casaEditrice"] = QString::fromStdString(casaEditrice);
     return json;
 }
 
 void Libro::fromJsonSpecific(const QJsonObject& json) {
-    setCartaceoBaseFromJson(json); // Imposta campi base cartacei
+    setCartaceoBaseFromJson(json);
     annoStampa = json["annoStampa"].toInt();
     casaEditrice = json["casaEditrice"].toString().toStdString();
 }
@@ -50,4 +37,14 @@ void Libro::fromJsonSpecific(const QJsonObject& json) {
 Media* Libro::clone() const {
     return new Libro(getTitolo(), getAnno(), getImmagine(), getScrittore(), 
                     annoStampa, casaEditrice);
+}
+
+void Libro::accept(MediaVisitor* visitor) {
+    if (visitor) {
+        visitor->visit(this);
+    }
+}
+
+bool Libro::matchesCategory(const string& category) const {
+    return category == "Tutti" || category == "Libro";
 }

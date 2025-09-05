@@ -216,50 +216,16 @@ void MediaService::setJsonService(JsonService* service)
     jsonService = service;
 }
 
-QVector<Media*> MediaService::filterByCategory(const QString& category) const
+// Nuovo metodo che usa polimorfismo invece di getType
+QVector<Media*> MediaService::filterMedia(const QString& category, const QString& searchText) const
 {
-    if (category == "Tutti") {
-        return mediaCollection;
-    }
-    
     QVector<Media*> filtered;
+    std::string categoryStd = category.toStdString();
+    std::string searchStd = searchText.toStdString();
+    
     for (Media* media : mediaCollection) {
-        QString mediaType = QString::fromStdString(media->getMediaType());
-        if (mediaType == category) {
-            filtered.append(media);
-        }
-    }
-    return filtered;
-}
-
-QVector<Media*> MediaService::searchByTitle(const QString& searchText) const
-{
-    if (searchText.isEmpty()) {
-        return mediaCollection;
-    }
-    
-    QVector<Media*> filtered;
-    for (Media* media : mediaCollection) {
-        QString title = QString::fromStdString(media->getTitolo());
-        if (title.contains(searchText, Qt::CaseInsensitive)) {
-            filtered.append(media);
-        }
-    }
-    return filtered;
-}
-
-QVector<Media*> MediaService::filterByCategoryAndSearch(const QString& category, const QString& searchText) const
-{
-    QVector<Media*> categoryFiltered = filterByCategory(category);
-    
-    if (searchText.isEmpty()) {
-        return categoryFiltered;
-    }
-    
-    QVector<Media*> filtered;
-    for (Media* media : categoryFiltered) {
-        QString title = QString::fromStdString(media->getTitolo());
-        if (title.contains(searchText, Qt::CaseInsensitive)) {
+        // Usa il polimorfismo per il matching di categoria e ricerca
+        if (media->matchesCategory(categoryStd) && media->matchesSearch(searchStd)) {
             filtered.append(media);
         }
     }

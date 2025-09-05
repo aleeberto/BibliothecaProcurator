@@ -26,7 +26,6 @@ class Series : public Media{
         
     protected:
         // Metodi helper per le classi derivate
-        std::vector<std::pair<string, string>> getSeriesBaseDetails() const;
         QJsonObject getSeriesBaseJson() const;
         void setSeriesBaseFromJson(const QJsonObject& json);
 };
