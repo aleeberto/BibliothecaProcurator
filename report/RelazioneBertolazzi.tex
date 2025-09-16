@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper,10pt]{article}
 
 % ---------------------------
 % Pacchetti di base
@@ -20,6 +20,7 @@
 % Riferimenti e link
 % ---------------------------
 \usepackage{hyperref}
+\usepackage{bookmark}
 
 % ---------------------------
 % Header e footer
@@ -38,9 +39,6 @@
 
 % ---------------------------
 % Listings e codice JSON e C++
-% ---------------------------
-% ---------------------------
-% Listings e codice
 % ---------------------------
 \usepackage{bera}
 \usepackage{listings}
@@ -125,19 +123,18 @@
 
 \begin{document}
 
-\fontsize{10pt}{12pt}\selectfont
 \maketitle
 
 \begin{abstract}
-\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un'applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca. 
+\noindent Relazione del progetto "Biblioteca Virtuale" per il corso "Programmazione ad Oggetti". Un'applicazione scritta in C++ con framework Qt che permette la gestione di una biblioteca personale, implementando design pattern avanzati e un'architettura modulare scalabile.
 \end{abstract}
 
 \section{Introduzione}
-Bibliotheca procurator dal latino "direttore della biblioteca", il nome che ho deciso di dare all applicazione. Il progetto proponeva di creare un'applicazione che permettesse la gestione di una biblioteca. L'applicazione che ho deciso di creare non riguarda l'organizzazione di una biblioteca pubblica, bensì l'organizzazione di una biblioteca privata in modo da poter strutturare e catalogare libri, film, CD e simili per un privato con collezioni ampie. Mi sono dedicato questo obbiettivo poiché, oltre a poter avere un'utilità per me, ho notato che non si trovano prodotti simili online e, se si trovano, si tratta di applicazioni datate, a pagamento o non più mantenute.
+Bibliotheca procurator dal latino "direttore della biblioteca", il nome che ho deciso di dare all'applicazione. Il progetto proponeva di creare un'applicazione che permettesse la gestione di una biblioteca. L'applicazione che ho sviluppato non riguarda l'organizzazione di una biblioteca pubblica, bensì l'organizzazione di una biblioteca privata in modo da poter strutturare e catalogare libri, film, CD, manga, anime e serie TV per un privato con collezioni ampie. Mi sono dedicato a questo obiettivo poiché, oltre a poter avere un'utilità per me stesso, ho notato che non si trovano prodotti simili online e, se si trovano, si tratta di applicazioni datate, a pagamento o non più mantenute.
 
 \section{Struttura del Progetto}
 \subsection{Logic}
-Nella cartella \texttt{Logic} si trova tutta la parte logica dell'applicazione. Le specifiche del progetto richiedevano almeno 3 classi concrete per i progetti svolti singolarmente, ma per completezza ho deciso di farne 6: \texttt{Anime}, \texttt{SerieTv}, \texttt{Film}, \texttt{Cd}, \texttt{Manga} e \texttt{Libro}. Come classi astratte invece ho utilizzato \texttt{Media} come superclasse e ulteriori due classi \texttt{Series} e \texttt{Cartaceo}.
+Nella cartella \texttt{Logic} si trova tutta la parte logica dell'applicazione. Ho implementato 6 classi concrete: \texttt{Anime}, \texttt{SerieTv}, \texttt{Film}, \texttt{Cd}, \texttt{Manga} e \texttt{Libro}. Come classi astratte ho utilizzato \texttt{Media} come superclasse e due classi intermedie \texttt{Series} e \texttt{Cartaceo} per raggruppare funzionalità comuni. Ho inoltre implementato il pattern Visitor tramite \texttt{MediaVisitor} per gestire operazioni polimorfiche sui diversi tipi di media.
 
 \begin{figure}[ht!]
     \centering
@@ -145,19 +142,124 @@ Nella cartella \texttt{Logic} si trova tutta la parte logica dell'applicazione. 
     \caption{Struttura logica dell'applicazione}
 \end{figure}
 
-\subsection{UI}
-Per quanto riguarda l'interfaccia grafica, \texttt{mainWindow} gestisce la finestra principale. Ho deciso poi di alleggerire relativamente il file creando file \texttt{Widget} che si occupano di generare parti singole dell'interfaccia. \texttt{topMenuWidget} va a generare la parte di pulsanti che si occupa della creazione, caricamento e chiusura della biblioteca e un bottone per la creazione di nuovi \texttt{Media}. \texttt{rightLayoutWidget} si occupa di gestire la parte destra del layout in cui vengono proposti tutti gli elementi media contenuti nella libreria. \texttt{createItemWidget} invece è la finestra che viene utilizzata a seguito del click del tasto "crea media" per creare un nuovo media. Questa finestra va a sostituire quello che viene inizialmente generato da \texttt{rightLayoutWidget} per poi, una volta confermata la creazione, nascondersi.
+\newpage
 
-\subsection{Service}
-Nella parte \texttt{Service} ho cercato di inserire tutta la parte di codice non legata alla generazione della UI e alla logica dell'applicazione. Il file \texttt{jsonService} si occupa della gestione del file JSON per la persistenza dei dati, gestendo il caricamento e il salvataggio del file, conversione e aggiunta di un nuovo media e la rimozione. \texttt{styleUtils} può essere visto come un file CSS nella programmazione web: qui ho raggruppato tutta la parte che si occupa dello stile dell'applicazione (a volte ho lasciato la gestione dello stile direttamente nei file Widget). \texttt{uiService} si occupa invece del "popolamento" dell'interfaccia grafica. \texttt{mediaType} è un file che ho utilizzato per raggruppare i \texttt{dynamic\_cast} presenti nel codice, permettendo una gestione più semplice e pulita dei vari tipi di media. \texttt{mediaService} è la parte che si occupa della gestione generale di tutti i servizi, visto un po' come file "mainService".
+\subsection{UI}
+Per l'interfaccia grafica ho adottato un'architettura modulare dove \texttt{mainWindow} coordina diversi widget specializzati:
+
+\begin{itemize}
+    \item \texttt{topMenuWidget}: gestisce la barra superiore con pulsanti iconografici per le operazioni principali (carica, salva, crea, toggle tema)
+    \item \texttt{rightLayoutWidget}: si occupa della visualizzazione dinamica dei media utilizzando il pattern Visitor per creare widget specifici per ogni tipo
+    \item \texttt{createItemWidget}: finestra modulare per creazione e modifica che utilizza form generati dinamicamente tramite \texttt{FormWidgetVisitor}
+    \item \texttt{mediaWidgetVisitor}: implementa il pattern Visitor per creare rappresentazioni UI specifiche per ogni tipo di media
+    \item \texttt{formWidgetVisitor}: genera automaticamente form di inserimento/modifica basati sul tipo di media selezionato
+\end{itemize}
+
+\subsection{Services}
+Ho implementato un'architettura a servizi:
+
+\begin{itemize}
+    \item \texttt{JsonService}: gestisce la persistenza dei dati utilizzando un pattern Factory per la creazione dinamica di oggetti Media dal JSON
+    \item \texttt{MediaService}: service layer principale che incapsula tutta la business logic per la gestione dei media, inclusi validazione, operazioni CRUD e filtering
+    \item \texttt{UIService}: si occupa della formattazione dei dati per la visualizzazione e della gestione delle immagini con placeholder automatici
+    \item \texttt{StyleUtils}: sistema centralizzato di gestione degli stili con supporto per temi chiaro/scuro e palette di colori coerenti
+    \item \texttt{JsonTypeVisitor}: visitor specializzato per determinare il tipo di media durante la serializzazione
+\end{itemize}
+
+\section{Design Pattern Implementati}
+
+\subsection{Visitor Pattern}
+Il Visitor pattern è stato implementato in diversi contesti per separare gli algoritmi dalle strutture dati:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+class MediaVisitor {
+public:
+    virtual ~MediaVisitor() = default;
+    virtual void visit(Film* film) = 0;
+    virtual void visit(SerieTv* serieTv) = 0;
+    virtual void visit(Anime* anime) = 0;
+    virtual void visit(Libro* libro) = 0;
+    virtual void visit(Manga* manga) = 0;
+    virtual void visit(Cd* cd) = 0;
+};
+
+// Utilizzo
+media->accept(widgetVisitor);
+QWidget* specificWidget = widgetVisitor->getResultWidget();
+\end{lstlisting}
+
+Ho utilizzato questo pattern per:
+\begin{itemize}
+    \item Creazione di widget UI specifici (\texttt{MediaWidgetVisitor})
+    \item Generazione di form dinamici (\texttt{FormWidgetVisitor})  
+    \item Determinazione del tipo per serializzazione (\texttt{JsonTypeVisitor})
+\end{itemize}
+
+\subsection{Factory Method Pattern}
+Implementato per la creazione dinamica di oggetti Media dal JSON senza conoscere il tipo specifico a compile-time:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+void JsonService::initializeFactories() {
+    mediaFactories["Film"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        std::string titolo = json["titolo"].toString().toStdString();
+        int anno = json["anno"].toInt();
+        std::string immagine = json["immagine"].toString().toStdString();
+        
+        auto film = std::make_unique<Film>(titolo, anno, immagine, "", "", 0);
+        film->fromJsonSpecific(json);
+        return film;
+    };
+    
+    mediaFactories["Serie Tv"] = [](const QJsonObject& json) -> std::unique_ptr<Media> {
+        // Factory per Serie TV...
+    };
+}
+\end{lstlisting}
+
+\subsection{Template Method Pattern}
+Utilizzato per la validazione unificata dei form con algoritmi personalizzabili:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+template<typename Validator>
+bool MediaService::validateFieldAtIndex(const QList<QLineEdit*>& fields, int index, 
+                                       const QString& fieldName, QWidget* parent, 
+                                       Validator validator) const {
+    if (index >= fields.size()) return false;
+    return validator(fields[index], fieldName, parent);
+}
+
+auto validateFields = [this, &fields, parent](
+    const QVector<QPair<int, QString>>& fieldConfigs, 
+    auto validator) -> bool {
+    for (const auto& field : fieldConfigs) {
+        if (!validateFieldAtIndex(fields, field.first, field.second, parent, validator)) {
+            return false;
+        }
+    }
+    return true;
+};
+\end{lstlisting}
 
 \section{Persistenza dei Dati}
-Come metodologia di persistenza dei dati ho scelto di utilizzare un file JSON, scelta dettata innanzitutto dalla semplicità di utilizzo e dalla facile manutenibilità. Le modifiche che vengono fatte nell'interfaccia grafica, a seguito della conferma tramite pop-up, vengono scritte subito nel file JSON. La maggior parte del codice di gestione del file JSON è contenuta nel file \texttt{jsonService}.\newline
-Il codice JSON è così strutturato:
+Ho implementato un sistema di persistenza basato su JSON. Implementando \textbf{Factory Pattern} per la creazione dinamica di oggetti dal JSON, \textbf{Template Method} per la serializzazione/deserializzazione specifica per tipo, \textbf{Visitor Pattern} per determinare il tipo durante la serializzazione. Ogni classe concreta implementa metodi virtuali per la gestione specifica dei propri dati:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+// Metodi virtuali per serializzazione
+virtual QJsonObject toJsonSpecific() const = 0;
+virtual void fromJsonSpecific(const QJsonObject& json) = 0;
+
+QJsonObject SerieTv::toJsonSpecific() const {               // Implementazione in SerieTv
+    auto json = getSeriesBaseJson(); // Eredita da Series
+    json["type"] = "Serie Tv";
+    json["ideatore"] = QString::fromStdString(ideatore);
+    json["casaProduttrice"] = QString::fromStdString(casaProduttrice);
+    return json;
+}
+\end{lstlisting}
+Il file JSON é cosi strutturato:
 
 \begin{lstlisting}[style=jsonstyle]
-"media": [
-    {
+"media": [    {
         "anno": 1986,
         "disegnatore": "Akira Toriyama",
         "durataMediaEp": 24,
@@ -168,13 +270,61 @@ Il codice JSON è così strutturato:
         "studioAnimazione": "Toei Animation",
         "titolo": "Dragon Ball",
         "type": "Anime"
+    }]
+\end{lstlisting}
+
+\section{Polimorfismo e Architettura Modulare}
+
+\subsection{Serializzazione Polimorfica}
+Ho eliminato l'uso di dynamic\_cast sostituendolo con metodi virtuali per una gestione più pulita e sicura:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+virtual QJsonObject toJsonSpecific() const = 0;
+virtual void fromJsonSpecific(const QJsonObject& json) = 0;
+virtual Media* clone() const = 0;
+virtual bool matchesCategory(const string& category) const = 0;
+\end{lstlisting}
+
+\subsection{Gestione Memory-Safe}
+Utilizzo di smart pointer e RAII (Resource Acquisition Is Initialization) per una gestione automatica della memoria:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+std::function<std::unique_ptr<Media>(const QJsonObject&)> mediaFactories;
+
+Media* Anime::clone() const {       // Clone pattern per duplicazione
+    return new Anime(getTitolo(), getAnno(), getImmagine(), 
+                    getNumEpisodi(), getNumStagioni(), getDurataMediaEp(), 
+                    getInCorso(), disegnatore, studioAnimazione);
+}
+\end{lstlisting}
+
+\section{Form Dinamici e UI Generata}
+Il sistema di creazione/modifica utilizza form generati automaticamente tramite il pattern Visitor:
+
+\begin{lstlisting}[language=cpp, style=cppstyle]
+const QVector<FieldConfig> FILM_FIELDS = {       // Configurazioni statiche per ogni tipo di media
+    {"Titolo", "Inserisci titolo"},
+    {"Immagine", "Inserisci percorso immagine", FieldType::IMAGE},
+    {"Anno", "Inserisci anno", FieldType::INTEGER},
+    {"Regista", "Inserisci regista"},
+    {"Attore Protagonista", "Inserisci attore protagonista"},
+    {"Durata (min)", "Inserisci durata in minuti", FieldType::POSITIVE_INTEGER}
+};
+
+template<typename MediaType>    // Generazione automatica del form
+void FormWidgetVisitor::visitGeneric(MediaType* media, const QVector<FieldConfig>& fieldConfigs) {
+    QStringList values;
+    if (media) {
+        values = extractValues(media);
     }
-]
+    resultWidget = createStandardForm(fieldConfigs, values);
+}
 \end{lstlisting}
 
 \newpage
 
 \section{Interfaccia Grafica}
+
 \begin{figure}[ht!]
     \centering
     \begin{minipage}{0.4\textwidth}
@@ -182,15 +332,14 @@ Il codice JSON è così strutturato:
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Bottoni del \texttt{topMenuWidget}.\newline
-        In ordine:
+        Barra superiore con sistema iconografico:
         \begin{itemize}
-            \item Carica una biblioteca esistente
-            \item Crea e apre una nuova biblioteca
-            \item Chiudi la biblioteca corrente
-            \item Crea un nuovo elemento media
+            \item Carica biblioteca esistente
+            \item Crea nuova biblioteca con auto-save della cache
+            \item Chiudi biblioteca corrente
+            \item Crea nuovo elemento media
+            \item Toggle tema chiaro/scuro dinamico
         \end{itemize}
-        Il secondo bottone, nel caso non sia stata caricata una biblioteca e siano già stati creati dei media, salva automaticamente i media in cache nella nuova biblioteca.
     \end{minipage}
 \end{figure}
 
@@ -201,8 +350,7 @@ Il codice JSON è così strutturato:
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Nel \texttt{leftMenu} viene creata la barra di ricerca che, ad ogni cambiamento (ogni volta che viene digitato un carattere), cerca l'elemento nella biblioteca.\newline
-        La ricerca è "case insensitive" e funziona anche con ricerca parziale. Sotto sono presenti i media categorizzati per tipologia.
+        Nel leftMenu viene creata la barra di ricerca che, ad ogni cambiamento (ogni volta che viene digitato un carattere), cerca l’elemento nella biblioteca. La ricerca è  "case insensitive" e funziona anche con ricerca parziale. Sotto sono presenti i media categorizzati per tipologia.
     \end{minipage}
 \end{figure}
 
@@ -213,75 +361,50 @@ Il codice JSON è così strutturato:
     \end{minipage}\hfill
     \begin{minipage}{0.55\textwidth}
         \small
-        Un esempio di elemento media: a sinistra viene caricata l'immagine, mentre a destra vengono visualizzati tutti i dettagli. All'estrema destra ci sono due bottoni: il primo permette di modificare il media, il secondo di cancellarlo dalla libreria. Entrambe le funzioni di modifica ed eliminazione, appena confermate, vanno a modificare direttamente il file JSON.\newline
-        Alcuni miglioramenti che non ho implementato: una gestione migliore dello scaling dell'immagine ed un'eventuale ricerca automatica online, per alleggerire l'utente dal dover scaricare e gestire manualmente le immagini.
+        Ogni elemento media utilizza il pattern Visitor per generare layout specifici con:
+        \begin{itemize}
+            \item Caricamento delle immagini
+            \item Bottoni di azione per la modifica e la cancellazione
+            \item Layout responsive che si adatta al contenuto
+            \item Dettagli specifici per ogni tipo di media
+        \end{itemize}
     \end{minipage}
 \end{figure}
 
-\clearpage
-
-\section{Polimorfismo}
-
-\subsection{getSpecificDetails()}
+\section{Ricerca e Filtering}
+Ho implementato un sistema di ricerca case-insensitive con filtering per categorie:
 
 \begin{lstlisting}[language=cpp, style=cppstyle]
-\\ Dichiarazione
-    virtual std::vector<std::pair<string, string>> getSpecificDetails() const = 0;
+bool Media::matchesSearch(const string& searchText) const {
+    if (searchText.empty()) return true;
+    
+    string lowerTitle = titolo;
+    string lowerSearch = searchText;
+    
+    // Conversione case-insensitive
+    std::transform(lowerTitle.begin(), lowerTitle.end(), lowerTitle.begin(), ::tolower);
+    std::transform(lowerSearch.begin(), lowerSearch.end(), lowerSearch.begin(), ::tolower);
+    
+    return lowerTitle.find(lowerSearch) != string::npos;
+}
 
-\\ Implementazione
-    std::vector<std::pair<string, string>> Anime::getSpecificDetails() const {
-    auto details = getSeriesBaseDetails(); // Eredita da Series
-    details.insert(details.end(), {
-        {"Disegnatore", disegnatore},
-        {"Studio", studioAnimazione}
-    });
-    return details;
+// Filtering combinato categoria + ricerca
+QVector<Media*> MediaService::filterMedia(const QString& category, const QString& searchText) const {
+    QVector<Media*> filtered;
+    std::string categoryStd = category.toStdString();
+    std::string searchStd = searchText.toStdString();
+    
+    for (Media* media : mediaCollection) {
+        if (media->matchesCategory(categoryStd) && media->matchesSearch(searchStd)) {
+            filtered.append(media);
+        }
     }
+    return filtered;
+}
 \end{lstlisting}
 
-La funzione \texttt{getSpecificDetails()} è una funzione virtuale pura definita nella classe astratta \texttt{Media} e ridefinita in ogni classe concreta. Questa funzione viene utilizzata per ottenere i dettagli specifici di ogni tipo di media, restituendo un vettore di coppie chiave-valore che rappresentano gli attributi specifici dell'istanza. Ad esempio, la classe \texttt{Anime} eredita da \texttt{Series} e aggiunge dettagli specifici come "Disegnatore" e "Studio". Ho scelto di utilizzare questo approccio contro all utilizzo di dinamyc\_cast per ottenere i valori specifici di ogni media visto che mantiene il codice piú pulito e leggibile.
-
-\subsection{toJsonSpecific() / fromJsonSpecific()}
-
-\begin{lstlisting}[language=cpp, style=cppstyle]
-\\ Dichiarazioni
-
-    virtual QJsonObject toJsonSpecific() const = 0;
-    virtual void fromJsonSpecific(const QJsonObject& json) = 0;
-
-\\ implementazione
-
-    QJsonObject SerieTv::toJsonSpecific() const {
-    auto json = getSeriesBaseJson();
-    json["ideatore"] = QString::fromStdString(ideatore);
-    json["casaProduttrice"] = QString::fromStdString(casaProduttrice);
-    return json;
-    }
-\end{lstlisting}
-
-Ho deciso di implementare questo approccio dopo aver provato a gestire i vari tipi di media con dei dynamic\_cast. La gestione dei vari tipi di media con i cast risultava comunque semplice ma rendeva il codice meno leggibile. Con questo approccio poi la serializzazione é "automatica" e non richiede di scrivere i campi specifici per ogni tipo di media. Eventuali modifiche o aggiunte possono essere gestite direttamente nella classe specifica.
-\subsection{Clone}
-
-\begin{lstlisting}[language=cpp, style=cppstyle]
-\\ Dichiarazione
-
-    virtual Media* clone() const = 0;
-\end{lstlisting}
-
-Implementazione del metodo clone senza essere a conoscenza del tipo concreto. Ogni classe specifica gestisce l' allocazione della memoria per il proprio oggetto e garantisce che tutti i dati vengano copiati correttamente.
-
-\subsection{getMediaType()}
-
-\begin{lstlisting}[language=cpp, style=cppstyle]
-\\ Dichiarazione
-
-    virtual string getMediaType() const = 0;
-\end{lstlisting}
-
-Implementando questa funzione ho potuto rimuovere tutti i dynamic\_cast e typeid. Ho una chiamata diretta permettendomi di non utilizzare cast che in termini di computazione sono costosi e a rischio di errori. Anche qui ogni classe specifica gestisce il proprio tipo.
-
-\section{Rendiconto delle tempistiche}
-Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quanto è stato sviluppato trovando il tempo tra lo studio e il lavoro. Escludendo lo studio personale necessario per comprendere il funzionamento di Qt e delle librerie utilizzate, e lo studio più approfondito del linguaggio C++, posso stimare circa 65 ore di sviluppo.
+\section{Rendiconto delle Tempistiche}
+Lo sviluppo del progetto ha richiesto circa 80 ore di lavoro, distribuite come segue:
 
 \begin{table}[h!]
 \centering
@@ -289,31 +412,43 @@ Quantificare le ore di lavoro richieste dal progetto risulta complicato, in quan
 \hline
 \textbf{Jobs} & \textbf{Scheduled hours} & \textbf{Actual hours} & \textbf{Notes} \\
 \hline
-Modellazione diagramma UML          & 1  & 2  & Il tempo é stato sforato perché nel corso dello sviluppo del progetto sono state necessarie delle modifiche. \\
-Bozza interfaccia Grafica           & 1  & 1  &   \\
-Implementazione modello Logico      & 5  & 5  & Implementazione veloce grazie al diagramma UML già deciso. \\
-Implementazione Interfaccia grafica & 15 & 20 &   \\
-Implementazione parte Service       & 15 & 15 &   \\
-Affinamento Progetto                & 5  & 10 & Questo Job sarebbe da includere nella implementazione della parte di Service, ma visto che é stato lavorato anche su altro ho deciso di considerarlo a parte. \\
-Debug                               & 5  & 7  & Quantificare il tempo di debug risulta difficile visto che il progetto é stato sviluppato per parti e dopo ogni modifica spesso risultava necessario sistemare qualcosa. Alcuni bug invece sono stati trovati con un uso piú attento dell applicazione. \\
-Modifiche Finali                    & 5  & 5  &   \\
+Modellazione diagramma UML          & 1  & 2  & Tempo aggiuntivo per progettazione pattern \\
+Implementazione modello Logico      & 5  & 6  & Aggiunta pattern Visitor e metodi virtuali \\
+Implementazione Design Pattern      & 8  & 12 & Visitor, Factory, Template Method \\
+Implementazione Interfaccia grafica & 15 & 20 & Sistema di temi e widget modulari \\
+Implementazione parte Service       & 15 & 18 & Architettura a servizi e validazione \\
+Sistema di Validazione              & 5  & 8  & Validazione robusta con template \\
+Affinamento Progetto                & 5  & 8  & UI/UX improvements e ottimizzazioni \\
+Debug e Testing                     & 5  & 6  & Testing approfondito e correzioni \\
 \hline
 \end{tabularx}
 \end{table}
 
 \section{Possibili Miglioramenti}
 \begin{itemize}
-    \item Implementare una ricerca online della copertina dei media.
-    \item Attualmente Serie Tv, Anime e manga sono stati implementati pensando che l' utente sia in possesso di tutti i volumi o episodi di questi. Sarebbe da rendere possibile all'utente di inserire quali volumi o episodi é effettivamente in possesso.
-    \item Implementare uno scaling e ridimensionamento delle immagini di copertina migliore.
-    \item Implementare tema scuro.
+    \item Implementare una ricerca online automatica delle copertine dei media
+    \item Per Serie TV, Anime e Manga, permettere all'utente di specificare quali volumi/episodi possiede effettivamente
+    \item Migliorare il sistema di scaling e ridimensionamento delle immagini
+    \item Aggiungere supporto per database relazionali oltre al JSON
+    \item Implementare sistema di backup automatico e cronologia delle modifiche
+    \item Aggiungere statistiche avanzate sulla collezione con grafici
+    \item Supportare collezioni multiple e condivisione tra utenti
+    \item Implementare sistema di importazione da cataloghi online (IMDb, MyAnimeList, etc.)
 \end{itemize}
 
-\section{Used Words}
+\section{Conclusioni}
+Il progetto Bibliotheca Procurator rappresenta un'applicazione per la gestione di biblioteche personali che implementa diversi design pattern avanzati e un'architettura modulare scalabile. L'uso del pattern Visitor per la generazione dinamica dell'UI, del Factory pattern per la persistenza dei dati, e del Template Method per la validazione, combinati con un sistema di servizi, rendono l'applicazione facilmente estensibile e manutenibile.
+
+\section{Terminologie Utilizzate}
 \begin{itemize}
-    \item Factory Method Pattern: Definizione da \href{https://it.wikipedia.org/wiki/Factory_method}{Wikipedia}  In programmazione, la "factory" o Factory Method Pattern è un design pattern creazionale che permette di creare oggetti senza specificare la classe esatta dell'oggetto da istanziare. Funziona definendo un'interfaccia per la creazione di oggetti, ma lasciando che le sottoclassi decidano quale oggetto specifico creare, delegando così la responsabilità della creazione. Ho utilizzato la parola factory dove ho utilizzato questo desing pattern, essendo una cosa che ho scoperto durante la creazione di questo progetto mi sono fatto aiutare molto da esempi o altri riferimenti online, non sono sicuro dell uso corretto di questo metodo.
-    \item Media: viene inteso come qualsiasi elemento singolo che puó essere Cd, Manga, Serie Tv, Libro e Film..
-    \item Cast: usata indicando gli static\_cast ma principalmente in questo caso per i dynamic\_cast.
+    \item \textbf{Factory Method Pattern}: Pattern creazionale implementato tramite lambda functions in \texttt{JsonService} per creare istanze specifiche di Media dal JSON senza conoscere il tipo a compile-time.
+    \item \textbf{Visitor Pattern}: Pattern comportamentale utilizzato per separare algoritmi dalle strutture dati, implementato per generazione UI (\texttt{MediaWidgetVisitor}), form dinamici (\texttt{FormWidgetVisitor}) e serializzazione (\texttt{JsonTypeVisitor}).
+    \item \textbf{Template Method Pattern}: Pattern utilizzato per definire algoritmi di validazione con parti personalizzabili, implementato tramite template functions in \texttt{MediaService}.
+    \item \textbf{Service Layer Architecture}: Architettura che separa la business logic in servizi specializzati (\texttt{MediaService}, \texttt{JsonService}, \texttt{UIService}, \texttt{StyleUtils}).
+    \item \textbf{SOLID Principles}: Principi di design object-oriented applicati per garantire codice mantenibile e estensibile.
+    \item \textbf{Media}: Termine generico per indicare qualsiasi elemento della collezione (Film, Libro, CD, Serie TV, Anime, Manga).
+    \item \textbf{Smart Pointers}: Utilizzo di \texttt{std::unique\_ptr} per gestione automatica della memoria e ownership chiara.
+    \item \textbf{RAII (Resource Acquisition Is Initialization)}: Tecnica di gestione delle risorse che lega il ciclo di vita delle risorse a quello degli oggetti.
 \end{itemize}
 
 \end{document}
